@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>КИЗ · Честный знак — дашборд</title>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F0EBE1;--bg2:#E8E1D4;--bg3:#FAF8F4;--card:#FFF;--border:rgba(160,148,128,.25);--border2:rgba(160,148,128,.45);--ink:#1A1610;--ink2:#6B6357;--ink3:#A09688;--green:#2D7A4F;--red:#B84040;--amber:#A06820;--blue:#005BFF;--hl:#FBF3D6;--hl2:#F4E9C4;--py:#7C6F55;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Comfortaa',sans-serif;background:var(--bg);color:var(--ink);font-size:13px}
+.header{background:var(--bg2);border-bottom:1px solid var(--border2);padding:0 16px;height:56px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
+.logo{width:34px;height:34px;border-radius:9px;background:var(--ink);color:var(--bg3);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.bname{font-size:15px;font-weight:700}.bsub{font-size:8px;color:var(--ink3);letter-spacing:.12em;text-transform:uppercase}
+.tabs{display:flex;gap:2px;background:var(--bg);border-radius:8px;padding:3px;margin-left:14px}
+.tab{padding:6px 12px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:none;background:0;color:var(--ink3);font-family:inherit;white-space:nowrap}
+.tab.on{background:var(--ink);color:var(--bg3)}
+.hright{margin-left:auto;display:flex;align-items:center;gap:8px}
+.clock{font-size:11px;color:var(--ink2);white-space:nowrap}
+.b{padding:6px 11px;background:0;border:1px solid var(--border2);border-radius:7px;font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:inherit;white-space:nowrap}
+.b:hover{background:var(--ink);color:var(--bg3);border-color:var(--ink)}.b:disabled{opacity:.4;cursor:default}
+.b.pri{background:var(--ink);color:var(--bg3);border-color:var(--ink)}.b.pri:hover{opacity:.9}
+.b.act{background:var(--amber);color:#fff;border-color:var(--amber)}
+.b.gr{background:var(--green);color:#fff;border-color:var(--green)}.b.gr:hover{opacity:.9}
+.main{padding:14px 16px;max-width:2000px;margin:0 auto}
+.fbar{background:var(--card);border:1px solid var(--border2);border-radius:11px;padding:10px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.fitem{display:flex;align-items:center;gap:7px}
+.fitem>label{font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
+.sel{padding:5px 9px;font-size:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--ink);font-family:inherit;outline:0;cursor:pointer}
+.sel:focus{border-color:var(--ink)}
+.search{padding:5px 9px;font-size:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--ink);font-family:inherit;outline:0;min-width:190px}
+.ctog{display:inline-flex;background:var(--bg);border-radius:7px;padding:2px;gap:1px}
+.ctog button{padding:5px 11px;border:0;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;background:0;color:var(--ink3)}
+.ctog button.on{background:var(--ink);color:var(--bg3)}
+.fspacer{margin-left:auto;font-size:10px;color:var(--ink3)}
+.mchips{display:inline-flex;flex-wrap:wrap;gap:3px}
+.mchip{padding:4px 8px;border:1px solid var(--border2);border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--bg3);color:var(--ink2)}
+.mchip.on{background:var(--ink);color:var(--bg3);border-color:var(--ink)}
+.mchip.nodata{opacity:.3;text-decoration:line-through}
+.mg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.mc{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:12px 15px}
+.ml{font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.12em;font-weight:700;margin-bottom:6px}
+.mv{font-size:23px;font-weight:700;line-height:1}.mv.g{color:var(--green)}.mv.r{color:var(--red)}.mv.a{color:var(--amber)}.mv.b{color:var(--blue)}
+.md{font-size:11px;margin-top:5px;color:var(--ink3)}.md b{color:var(--ink2)}
+.sec{margin-bottom:16px}
+.sh{display:flex;align-items:center;justify-content:space-between;padding-bottom:6px;margin-bottom:9px;border-bottom:1px solid var(--border2);flex-wrap:wrap;gap:8px}
+.st{font-size:11px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.1em}
+.sm2{font-size:11px;color:var(--ink3)}
+.sw{background:var(--card);border:1px solid var(--border);border-radius:11px;overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:right;padding:6px 8px;font-size:8.5px;font-weight:700;color:var(--ink3);background:var(--bg3);text-transform:uppercase;letter-spacing:.02em;border-bottom:1px solid var(--border);font-family:inherit;white-space:nowrap;position:sticky;top:0;z-index:5;line-height:1.15}
+thead th:first-child{text-align:left}
+thead th.hl{background:var(--hl2)!important;color:var(--amber)!important}
+tbody td{padding:5px 8px;color:var(--ink);border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:11.5px;position:relative}
+tbody td:first-child{text-align:left;font-weight:700;color:var(--ink2)}
+tbody tr:hover{background:var(--bg3)}
+tbody td.hl{background:var(--hl)}
+tbody tr.total td{font-weight:700;background:var(--bg2)!important;border-top:2px solid var(--border2);border-bottom:0}
+tbody tr.empty td{color:var(--ink3);text-align:center;padding:22px}
+.pos{color:var(--green)}.neg{color:var(--red)}
+.bar{position:absolute;top:2px;bottom:2px;right:2px;border-radius:3px;opacity:.24;z-index:0}
+.bar.bl{background:var(--blue)}.bar.g{background:var(--green)}.bar.r{background:var(--red)}.bar.a{background:var(--amber)}
+td span.v{position:relative;z-index:1}
+.kiz{font-family:'Comfortaa',monospace;font-size:10.5px;letter-spacing:-.02em;color:var(--ink2)!important;font-weight:400!important}
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:.02em;text-transform:uppercase}
+.pill.s-sorted{background:rgba(0,91,255,.12);color:var(--blue)}
+.pill.s-ready{background:rgba(160,104,32,.14);color:var(--amber)}
+.pill.s-cancel{background:rgba(184,64,64,.12);color:var(--red)}
+.pill.s-sold{background:rgba(45,122,79,.13);color:var(--green)}
+.pill.s-other{background:var(--bg);color:var(--ink3)}
+.tagdone{font-size:8px;background:var(--green);color:#fff;padding:1px 6px;border-radius:4px;font-weight:700}
+.tagnew{font-size:8px;background:var(--ink);color:var(--bg3);padding:1px 6px;border-radius:4px;font-weight:700}
+.tagbad{font-size:8px;background:var(--red);color:#fff;padding:1px 6px;border-radius:4px;font-weight:700}
+.diag{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-top:8px;font-size:11px;color:var(--ink2);display:none}
+.diag.show{display:block}
+.diag table{width:auto}.diag td{border:0;padding:2px 16px 2px 0;text-align:left;white-space:nowrap;position:static}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.dot.ok{background:var(--green)}.dot.warn{background:var(--amber)}.dot.err{background:var(--red)}
+.lm{padding:50px 24px;text-align:center;color:var(--ink3)}
+.gate{max-width:360px;margin:56px auto;text-align:center}
+.gate .gt{font-size:16px;font-weight:700;color:var(--ink)}
+.gate .gs{font-size:12px;color:var(--ink3);margin:4px 0 18px}
+.gate input{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:9px;font-size:14px;font-family:inherit;outline:0}
+.gate input:focus{border-color:var(--ink)}
+.gate .err{color:var(--red);font-size:11px;margin-top:8px;min-height:14px}
+.drop{max-width:520px;margin:26px auto;background:var(--card);border:1px dashed var(--border2);border-radius:14px;padding:30px 26px;text-align:center;transition:.15s}
+.drop.over{border-color:var(--ink);background:var(--bg3)}
+.drop .dt{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.drop .ds{font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:16px}
+.drop .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.note{max-width:520px;margin:12px auto 0;font-size:11px;color:var(--ink3);line-height:1.6;text-align:left;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:11px 13px}
+.note b{color:var(--ink2)}.note code{background:var(--bg2);padding:1px 5px;border-radius:4px;font-size:10.5px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg3);padding:11px 18px;border-radius:10px;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transition:.2s;z-index:300;box-shadow:0 8px 30px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.ov{display:none;position:fixed;inset:0;background:rgba(240,235,225,.95);backdrop-filter:blur(6px);z-index:200;align-items:center;justify-content:center}
+.ov.show{display:flex}
+.oc{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:22px;width:600px;max-width:92vw;box-shadow:0 8px 40px rgba(0,0,0,.1)}
+.oc h3{font-size:15px;margin-bottom:4px}.oc p{font-size:11px;color:var(--ink3);margin-bottom:12px}
+.oc textarea{width:100%;height:200px;border:1px solid var(--border2);border-radius:9px;padding:10px;font-family:monospace;font-size:11px;resize:vertical;outline:0}
+.oc textarea:focus{border-color:var(--ink)}
+.oc .row{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+@media(max-width:900px){.mg{grid-template-columns:repeat(2,1fr)}.tabs{margin-left:6px}.bsub,.clock{display:none}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">КЗ</div>
+  <div><div class="bname">КИЗ · возврат в оборот</div><div class="bsub">Wildberries FBS · Честный знак</div></div>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-p="over" onclick="tab('over')">Обзор</button>
+    <button class="tab" data-p="out" onclick="tab('out')">Вывод из оборота</button>
+    <button class="tab" data-p="ret" onclick="tab('ret')">Возврат в оборот</button>
+    <button class="tab" data-p="reg" onclick="tab('reg')">Реестр</button>
+  </div>
+  <div class="hright">
+    <div class="clock" id="clk"></div>
+    <button class="b" onclick="toggleDiag()">◧ диагностика</button>
+    <button class="b" id="offBtn" onclick="openOffline()" style="display:none">офлайн-файл</button>
+    <button class="b pri" id="reloadBtn" onclick="reload()">↻ обновить</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="fbar" id="fbar" style="display:none">
+    <div class="fitem"><label>ИП</label><select class="sel" id="fCo" onchange="render()"></select></div>
+    <div class="fitem" id="monthWrap"><label>Месяцы</label><div class="mchips" id="fMonths"></div></div>
+    <div class="fitem"><label>Поиск</label><input class="search" id="fSearch" placeholder="артикул или КИЗ…" oninput="render()"></div>
+    <div class="fitem" id="grpWrap"><label>Срез</label><div class="ctog" id="grp">
+      <button class="on" data-g="month" onclick="setGrp('month')">Месяц</button>
+      <button data-g="predmet" onclick="setGrp('predmet')">Предмет</button>
+      <button data-g="artikul" onclick="setGrp('artikul')">Артикул</button>
+    </div></div>
+    <div class="fspacer" id="fInfo"></div>
+  </div>
+
+  <div id="page-over"></div>
+  <div id="page-out"></div>
+  <div id="page-ret"></div>
+  <div id="page-reg"></div>
+
+  <div id="placeholder" class="lm">Загрузка…</div>
+</div>
+
+<div class="ov" id="pasteOv">
+  <div class="oc">
+    <h3>Вставить данные (офлайн)</h3>
+    <p>CSV/TSV с заголовком в первой строке, либо JSON-массив объектов.</p>
+    <textarea id="pasteTa" placeholder="дата;orderId;ИП;статус;артикул;предмет;КИЗ;цена"></textarea>
+    <div class="row"><button class="b" onclick="closePaste()">Отмена</button><button class="b pri" onclick="applyPaste()">Загрузить</button></div>
+  </div>
+</div>
+
+<input type="file" id="fileInp" accept=".csv,.tsv,.txt,.json,.xlsx" style="display:none" onchange="onFile(event)">
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* ═══════════ КОНФИГ ═══════════ */
+/* Впиши сюда URL своего воркера (после деплоя worker.js), напр.:
+   const WORKER = 'https://kiz-proxy.ВАШ-САБДОМЕН.workers.dev';
+   Пусто -> дашборд работает в офлайн-режиме (файл/вставка/демо). */
+const WORKER = '';
+
+/* ═══════════ STATE ═══════════ */
+const MONTHS=['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+const LS_REG='kiz_registry_v1', TRIM=31;
+const OUT_ST=['sorted','ready_for_pickup'], RET_ST=['canceled_by_client'];
+let ROWS=[], curTab='over', grpMode='month', selMonths=new Set();
+let SRC='—', loadedAt=null, SERVER=!!WORKER, REG=new Set(), COMPANIES=[];
+
+function getPass(){try{return sessionStorage.getItem('kiz_pass')||'';}catch(e){return '';}}
+function setPass(p){try{sessionStorage.setItem('kiz_pass',p);}catch(e){}}
+function loadRegLocal(){try{return new Set(JSON.parse(localStorage.getItem(LS_REG)||'[]'));}catch(e){return new Set();}}
+function saveRegLocal(){try{localStorage.setItem(LS_REG,JSON.stringify([...REG]));}catch(e){}}
+
+/* ═══════════ BOOT ═══════════ */
+function boot(){
+  document.getElementById('offBtn').style.display=SERVER?'inline-block':'none';
+  if(SERVER){ if(getPass()) loadServer(); else askPassword(); }
+  else { REG=loadRegLocal(); showDrop(); }
+}
+function askPassword(msg){
+  const ph=document.getElementById('placeholder'); ph.style.display='block';
+  document.getElementById('fbar').style.display='none';
+  ['over','out','ret','reg'].forEach(p=>document.getElementById('page-'+p).style.display='none');
+  ph.innerHTML=`<div class="gate">
+    <div class="gt">КИЗ · возврат в оборот</div>
+    <div class="gs">${msg||'Введите пароль для доступа к данным'}</div>
+    <input id="passInp" type="password" placeholder="пароль" onkeydown="if(event.key==='Enter')submitPass()">
+    <div class="err" id="passErr"></div>
+  </div>`;
+  setTimeout(()=>{const i=document.getElementById('passInp');if(i)i.focus();},50);
+}
+function submitPass(){const i=document.getElementById('passInp');if(i){setPass(i.value.trim());loadServer();}}
+
+/* ═══════════ SERVER ═══════════ */
+async function srv(qs,opts){
+  return fetch(WORKER+qs,Object.assign({headers:{'X-Access-Key':getPass(),'Content-Type':'application/json'}},opts||{}));
+}
+async function loadServer(refresh){
+  const btn=document.getElementById('reloadBtn'); if(btn)btn.disabled=true;
+  const ph=document.getElementById('placeholder'); ph.style.display='block'; ph.innerHTML='Загрузка данных из WB…';
+  try{
+    const r=await srv('?data=orders'+(refresh?'&refresh=1':''));
+    if(r.status===401){setPass('');askPassword('Неверный пароль, попробуйте ещё раз');if(btn)btn.disabled=false;return;}
+    if(!r.ok){const t=await r.text();throw new Error('HTTP '+r.status+' '+t.slice(0,160));}
+    const data=await r.json();
+    if(data.error) throw new Error(data.error);
+    await loadRegistry();
+    ingestServer(data);
+  }catch(e){
+    ph.style.display='block';
+    ph.innerHTML=`<div class="gate"><div class="gt">Не удалось загрузить</div>
+      <div class="gs">${e.message}</div>
+      <button class="b" onclick="loadServer(true)">Повторить</button>
+      <button class="b" onclick="setPass('');askPassword()" style="margin-left:6px">Сменить пароль</button>
+      <div style="margin-top:14px"><button class="b" onclick="openOffline()">Перейти в офлайн-режим</button></div>
+    </div>`;
+  }
+  if(btn)btn.disabled=false;
+}
+async function loadRegistry(){
+  try{const r=await srv('?data=registry');if(r.ok){const j=await r.json();REG=new Set((j.kiz||[]).map(k=>String(k).slice(0,TRIM)));}}
+  catch(e){}
+}
+function ingestServer(data){
+  COMPANIES=data.companies||[];
+  ROWS=(data.rows||[]).map(mapRow);
+  SRC='WB API · окно '+(data.window||90)+' дн.'; loadedAt=data.builtAt?new Date(data.builtAt):new Date();
+  DIAG_SRV=data.diag||[];
+  document.getElementById('placeholder').style.display='none';
+  buildFilters(COMPANIES);
+  document.getElementById('fbar').style.display='flex';
+  toast(`Загружено ${ROWS.length} строк из WB`);
+  render(); renderDiag();
+}
+let DIAG_SRV=[];
+
+/* ═══════════ OFFLINE MODE ═══════════ */
+function showDrop(){
+  const ph=document.getElementById('placeholder'); ph.style.display='block';
+  ph.innerHTML=`<div class="drop" id="drop">
+    <div class="dt">Офлайн-режим</div>
+    <div class="ds">Воркер не настроен. Перетащите файл выгрузки (.csv/.xlsx/.json)<br>или вставьте данные вручную. ${SERVER?'':'<br><span style="color:var(--amber)">Для работы всей команды из браузера настройте воркер (см. SETUP.md).</span>'}</div>
+    <div class="row">
+      <button class="b pri" onclick="pickFile()">Выбрать файл</button>
+      <button class="b" onclick="openPaste()">Вставить</button>
+      <button class="b" onclick="loadDemo()">Демо-данные</button>
+    </div></div>
+  <div class="note"><b>Колонки:</b> <code>дата</code>, <code>orderId</code>, <code>ИП</code>, <code>статус</code>, <code>артикул</code>, <code>предмет</code>, <code>КИЗ</code>, <code>цена</code>. Минимум — КИЗ, цена, статус.</div>`;
+  bindDrop();
+}
+function openOffline(){SERVER_ACTIVE=false;showDrop();}
+let SERVER_ACTIVE=SERVER;
+
+/* ═══════════ PARSERS (офлайн) ═══════════ */
+const ALIAS={date:['дата','date','createdat','created'],id:['orderid','id','номер заказа','заказ','order'],
+  co:['ип','компания','company','co','юрлицо','поставщик'],status:['статус','status','wbstatus'],
+  art:['артикул','article','artikul','vendorcode','sku','код'],predmet:['предмет','subject','категория','category'],
+  kiz:['киз','sgtin','маркировка','код маркировки','datamatrix'],price:['цена','price','finalprice','стоимость','сумма']};
+function keyOf(h){const s=String(h||'').trim().toLowerCase();for(const k in ALIAS)if(ALIAS[k].includes(s))return k;return null;}
+function detectDelim(l){const c=(l.match(/,/g)||[]).length,sc=(l.match(/;/g)||[]).length,t=(l.match(/\t/g)||[]).length;if(t>=sc&&t>=c)return '\t';if(sc>=c)return ';';return ',';}
+function splitLine(line,d){const o=[];let c='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(q){if(ch==='"'){if(line[i+1]==='"'){c+='"';i++;}else q=false;}else c+=ch;}else{if(ch==='"')q=true;else if(ch===d){o.push(c);c='';}else c+=ch;}}o.push(c);return o;}
+function parseCSV(text){text=text.replace(/^\uFEFF/,'').replace(/\r/g,'');const L=text.split('\n').filter(l=>l.trim()!=='');if(!L.length)return [];const d=detectDelim(L[0]);const H=splitLine(L[0],d).map(keyOf);const rows=[];for(let i=1;i<L.length;i++){const cs=splitLine(L[i],d);const o={};H.forEach((k,j)=>{if(k)o[k]=(cs[j]||'').trim();});rows.push(o);}return rows;}
+function parseJSON(t){const a=JSON.parse(t);if(!Array.isArray(a))throw new Error('Ожидался массив');return a.map(r=>{const o={};for(const k in r){const kk=keyOf(k);if(kk)o[kk]=r[k];}return o;});}
+
+/* ═══════════ NORMALIZE ═══════════ */
+function coercePrice(v){if(v==null||v==='')return 0;let s=String(v).replace(/\s/g,'').replace(/₽|руб\.?/gi,'').replace(',','.');const n=parseFloat(s);return isFinite(n)?n:0;}
+function parseDate(v){if(!v)return null;const s=String(v).trim();let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return {y:+m[1],mo:+m[2]};m=s.match(/^(\d{2})\.(\d{2})\.(\d{4})/);if(m)return {y:+m[3],mo:+m[2]};const d=new Date(s);if(!isNaN(d))return {y:d.getFullYear(),mo:d.getMonth()+1};return null;}
+function normStatus(v){const s=String(v||'').trim().toLowerCase();if(s.includes('sorted'))return 'sorted';if(s.includes('ready')||s.includes('pickup')||s.includes('готов'))return 'ready_for_pickup';if((s.includes('cancel')&&s.includes('client'))||s.includes('отказ'))return 'canceled_by_client';if(s.includes('sold')||s.includes('выкуп'))return 'sold';return s||'—';}
+function mapRow(r){const kizRaw=String(r.kiz||'').trim();const dt=parseDate(r.date);return {date:r.date||'',y:dt?dt.y:0,mo:dt?dt.mo:0,id:String(r.id||'').trim(),co:String(r.co||'—').trim()||'—',status:normStatus(r.status),art:String(r.art||r.article||'').trim(),predmet:String(r.predmet||'').trim()||'—',kizFull:kizRaw,kiz:kizRaw.slice(0,TRIM),price:coercePrice(r.price)};}
+function normalize(raw){return raw.map(mapRow);}
+
+/* ═══════════ FILE / PASTE (офлайн) ═══════════ */
+function pickFile(){document.getElementById('fileInp').click();}
+function onFile(e){const f=e.target.files[0];if(f)readFile(f);e.target.value='';}
+function readFile(f){const name=f.name.toLowerCase();const rd=new FileReader();
+  if(name.endsWith('.xlsx')){rd.onload=ev=>{try{if(typeof XLSX==='undefined')throw new Error('XLSX не загрузился, сохраните CSV');const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];const aoa=XLSX.utils.sheet_to_json(ws,{header:1,raw:false});const csv=aoa.map(r=>r.map(c=>`"${String(c==null?'':c).replace(/"/g,'""')}"`).join(';')).join('\n');ingest(parseCSV(csv),f.name);}catch(err){toast('Ошибка XLSX: '+err.message);}};rd.readAsArrayBuffer(f);}
+  else{rd.onload=ev=>{const t=ev.target.result;try{ingest(name.endsWith('.json')?parseJSON(t):parseCSV(t),f.name);}catch(err){toast('Ошибка: '+err.message);}};rd.readAsText(f,'utf-8');}}
+function openPaste(){document.getElementById('pasteOv').classList.add('show');setTimeout(()=>document.getElementById('pasteTa').focus(),40);}
+function closePaste(){document.getElementById('pasteOv').classList.remove('show');}
+function applyPaste(){const t=document.getElementById('pasteTa').value.trim();if(!t){closePaste();return;}try{ingest(t[0]==='['?parseJSON(t):parseCSV(t),'вставка');closePaste();}catch(err){toast('Не разобрал: '+err.message);}}
+function ingest(raw,src){const rows=normalize(raw);if(!rows.length){toast('Строк не найдено');return;}
+  ROWS=rows;SRC=src;loadedAt=new Date();SERVER_ACTIVE=false;REG=loadRegLocal();DIAG_SRV=[];
+  COMPANIES=[...new Set(ROWS.map(r=>r.co))].filter(c=>c&&c!=='—').sort();
+  document.getElementById('placeholder').style.display='none';buildFilters(COMPANIES);
+  document.getElementById('fbar').style.display='flex';toast(`Загружено ${rows.length} строк · ${src}`);render();renderDiag();}
+
+/* ═══════════ RELOAD ═══════════ */
+function reload(){ if(SERVER&&SERVER_ACTIVE) loadServer(true); else if(ROWS.length) render(); else boot(); }
+
+/* ═══════════ FILTERS ═══════════ */
+function buildFilters(cos){
+  const list=['ВСЕ',...(cos||[]).filter(Boolean)];
+  document.getElementById('fCo').innerHTML=list.map(c=>`<option value="${c}">${c==='ВСЕ'?'Все ИП':c}</option>`).join('');
+  const mos=[...new Set(ROWS.filter(r=>r.mo).map(r=>r.mo))].sort((a,b)=>a-b);
+  selMonths=new Set(mos);
+  document.getElementById('monthWrap').style.display=mos.length?'flex':'none';
+  document.getElementById('fMonths').innerHTML=MONTHS.map((m,i)=>{const n=i+1,has=mos.includes(n);return `<button class="mchip ${selMonths.has(n)?'on':''} ${has?'':'nodata'}" onclick="toggleMonth(${n})">${m}</button>`;}).join('');
+}
+function toggleMonth(n){if(selMonths.has(n))selMonths.delete(n);else selMonths.add(n);document.querySelectorAll('#fMonths .mchip')[n-1].classList.toggle('on');render();}
+function setGrp(g){grpMode=g;document.querySelectorAll('#grp button').forEach(b=>b.classList.toggle('on',b.dataset.g===g));render();}
+function curCoVal(){return document.getElementById('fCo').value;}
+function filtered(statuses){const co=curCoVal();const q=document.getElementById('fSearch').value.trim().toLowerCase();
+  return ROWS.filter(r=>{if(statuses&&!statuses.includes(r.status))return false;if(co!=='ВСЕ'&&r.co!==co)return false;if(r.mo&&selMonths.size&&!selMonths.has(r.mo))return false;if(q&&!(r.art.toLowerCase().includes(q)||r.kizFull.toLowerCase().includes(q)||r.predmet.toLowerCase().includes(q)))return false;return true;});}
+
+/* ═══════════ HELPERS ═══════════ */
+function fmt(n){return Math.round(n).toLocaleString('ru-RU');}
+function fmt2(n){return n.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function pillOf(s){const map={sorted:['s-sorted','sorted'],ready_for_pickup:['s-ready','ready_for_pickup'],canceled_by_client:['s-cancel','отказ клиента'],sold:['s-sold','выкуплен']};const[c,t]=map[s]||['s-other',s];return `<span class="pill ${c}">${t}</span>`;}
+function statusList(rows){const m={};rows.forEach(r=>{m[r.status]=m[r.status]||{n:0,sum:0};m[r.status].n++;m[r.status].sum+=r.price;});return m;}
+function exportable(rows){const seen=new Set();return rows.filter(r=>{if(!r.kiz)return false;if(r.price<=0)return false;if(REG.has(r.kiz))return false;if(seen.has(r.kiz))return false;seen.add(r.kiz);return true;});}
+
+/* ═══════════ RENDER ═══════════ */
+function tab(name){curTab=name;document.querySelectorAll('#tabs .tab').forEach(b=>b.classList.toggle('on',b.dataset.p===name));
+  ['over','out','ret','reg'].forEach(p=>document.getElementById('page-'+p).style.display=p===name?'block':'none');
+  document.getElementById('fbar').style.display=(ROWS.length&&name!=='reg')?'flex':'none';
+  document.getElementById('grpWrap').style.display=(name==='out'||name==='ret')?'flex':'none';render();}
+function render(){if(!ROWS.length)return;
+  if(curTab==='over')renderOver();
+  else if(curTab==='out')renderFlow('page-out','Заказы к выводу КИЗ из оборота',OUT_ST,'вывести из оборота при отгрузке на ПВЗ/СЦ');
+  else if(curTab==='ret')renderFlow('page-ret','Заказы к возврату КИЗ в оборот',RET_ST,'вернуть в оборот (отказ до выкупа)');
+  else if(curTab==='reg')renderReg();
+  document.getElementById('fInfo').textContent=`источник: ${SRC} · ${ROWS.length} строк`;}
+function kpi(l,v,c,s){return `<div class="mc"><div class="ml">${l}</div><div class="mv ${c||''}">${v}</div><div class="md">${s||''}</div></div>`;}
+
+function renderOver(){
+  const out=filtered(OUT_ST),ret=filtered(RET_ST);
+  const retExp=exportable(ret);
+  const bad=filtered(null).filter(r=>(OUT_ST.includes(r.status)||RET_ST.includes(r.status))&&(!r.kiz||r.price<=0));
+  const kpis=[kpi('К выводу из оборота',fmt(out.length),'b',`${fmt(out.reduce((s,r)=>s+r.price,0))} ₽ · sorted + ready`),
+    kpi('К возврату в оборот',fmt(ret.length),'r',`${fmt(ret.reduce((s,r)=>s+r.price,0))} ₽ · отказы`),
+    kpi('КИЗ готовы к выгрузке',fmt(retExp.length),'g',`${fmt(retExp.reduce((s,r)=>s+r.price,0))} ₽ · в Честный знак`),
+    kpi('Требуют внимания',fmt(bad.length),bad.length?'a':'',bad.length?'нет КИЗ или цена 0':'всё чисто')].join('');
+  const st=statusList(filtered(null));const order=['canceled_by_client','sorted','ready_for_pickup','sold'];
+  const keys=order.filter(k=>st[k]).concat(Object.keys(st).filter(k=>!order.includes(k)));
+  const maxN=Math.max(1,...keys.map(k=>st[k].n));
+  const rows=keys.map(k=>{const w=st[k].n/maxN*100;return `<tr><td>${pillOf(k)}</td><td><span class="bar bl" style="width:${w}%"></span><span class="v">${fmt(st[k].n)}</span></td><td>${fmt(st[k].sum)} ₽</td></tr>`;}).join('');
+  document.getElementById('page-over').innerHTML=`<div class="mg">${kpis}</div>
+    <div class="sec"><div class="sh"><div class="st">Заказы по статусам</div><div class="sm2">фильтр: ${curCoVal()==='ВСЕ'?'все ИП':curCoVal()}</div></div>
+    <div class="sw"><table><thead><tr><th>Статус</th><th>Заказов</th><th>Сумма</th></tr></thead><tbody>${rows||'<tr class="empty"><td colspan="3">Нет данных</td></tr>'}</tbody></table></div></div>
+    <div class="note" style="max-width:100%;margin-top:0"><b>Рутина.</b> Вкладка <b>Возврат в оборот</b> → «Экспорт для Честного знака»: файл <code>КИЗ ; Цена</code> (КИЗ 31 символ, цена 0 и уже выгруженные исключены). Выгруженные КИЗ уходят в общий <b>Реестр</b> ${SERVER_ACTIVE?'(на сервере — виден всем сотрудникам)':'(локально в этом браузере)'} и второй раз не задвоятся.</div>`;
+}
+
+function renderFlow(pageId,title,statuses,action){
+  const rows=filtered(statuses),exp=exportable(rows);
+  const inReg=rows.filter(r=>r.kiz&&REG.has(r.kiz)).length;
+  const noKiz=rows.filter(r=>!r.kiz).length,zero=rows.filter(r=>r.kiz&&r.price<=0).length;
+  const sumExp=exp.reduce((s,r)=>s+r.price,0);
+  const groups={};
+  rows.forEach(r=>{const g=grpMode==='month'?(r.mo?`${MONTHS[r.mo-1]} ${r.y}`:'без даты'):grpMode==='predmet'?r.predmet:(r.art||'—');groups[g]=groups[g]||{n:0,sum:0,exp:0,done:0,bad:0};const G=groups[g];G.n++;G.sum+=r.price;if(!r.kiz||r.price<=0)G.bad++;else if(REG.has(r.kiz))G.done++;else G.exp++;});
+  const gk=Object.keys(groups).sort();const maxSum=Math.max(1,...gk.map(k=>groups[k].sum));
+  let body=gk.map(k=>{const G=groups[k];const w=G.sum/maxSum*100;return `<tr><td>${k}</td><td><span class="bar a" style="width:${w}%"></span><span class="v">${fmt(G.n)}</span></td><td>${fmt(G.sum)} ₽</td><td class="hl"><b class="pos">${fmt(G.exp)}</b></td><td>${G.done?fmt(G.done):'—'}</td><td>${G.bad?`<span class="neg">${fmt(G.bad)}</span>`:'—'}</td></tr>`;}).join('');
+  const tot=gk.reduce((a,k)=>{const G=groups[k];a.n+=G.n;a.sum+=G.sum;a.exp+=G.exp;a.done+=G.done;a.bad+=G.bad;return a;},{n:0,sum:0,exp:0,done:0,bad:0});
+  if(gk.length)body+=`<tr class="total"><td>Итого</td><td>${fmt(tot.n)}</td><td>${fmt(tot.sum)} ₽</td><td class="hl">${fmt(tot.exp)}</td><td>${fmt(tot.done)}</td><td>${fmt(tot.bad)}</td></tr>`;
+  if(!gk.length)body=`<tr class="empty"><td colspan="6">Нет заказов под фильтром</td></tr>`;
+  const kpis=[kpi('Заказов',fmt(rows.length),'',statuses.join(' + ')),kpi('КИЗ к выгрузке',fmt(exp.length),'g',`${fmt(sumExp)} ₽`),kpi('Уже в реестре',fmt(inReg),'',inReg?'исключены':'—'),kpi('Проблемные',fmt(noKiz+zero),(noKiz+zero)?'a':'',(noKiz+zero)?`нет КИЗ: ${noKiz} · цена 0: ${zero}`:'—')].join('');
+  document.getElementById(pageId).innerHTML=`<div class="mg">${kpis}</div>
+    <div class="sec"><div class="sh"><div class="st">${title}</div><div style="display:flex;gap:8px;align-items:center"><span class="sm2">${exp.length} КИЗ · ${fmt(sumExp)} ₽ к выгрузке</span><button class="b gr" onclick="exportChZ('${statuses.join(',')}')" ${exp.length?'':'disabled'}>↧ Экспорт для Честного знака</button></div></div>
+    <div class="sw"><table><thead><tr><th>${grpMode==='month'?'Месяц':grpMode==='predmet'?'Предмет':'Артикул'}</th><th>Заказов</th><th>Сумма</th><th class="hl">К выгрузке</th><th>В реестре</th><th>Проблем</th></tr></thead><tbody>${body}</tbody></table></div></div>
+    <div class="sec"><div class="sh"><div class="st">Строки — ${action}</div><div class="sm2">первые 400</div></div>
+    <div class="sw"><table><thead><tr><th>Дата</th><th>ИП</th><th>Статус</th><th>Артикул</th><th>Предмет</th><th>КИЗ (31)</th><th>Цена</th><th>·</th></tr></thead><tbody>${rowLines(rows)}</tbody></table></div></div>`;
+}
+function rowLines(rows){if(!rows.length)return `<tr class="empty"><td colspan="8">Пусто</td></tr>`;
+  return rows.slice(0,400).map(r=>{let tag=!r.kiz?'<span class="tagbad">нет КИЗ</span>':r.price<=0?'<span class="tagbad">цена 0</span>':REG.has(r.kiz)?'<span class="tagdone">в реестре</span>':'<span class="tagnew">к выгрузке</span>';
+    return `<tr><td style="text-align:left;font-weight:400;color:var(--ink3)">${r.date||'—'}</td><td style="text-align:left;font-weight:400">${r.co}</td><td style="text-align:left">${pillOf(r.status)}</td><td style="text-align:left;font-weight:400">${r.art||'—'}</td><td style="text-align:left;font-weight:400;color:var(--ink3)">${r.predmet}</td><td style="text-align:left" class="kiz">${r.kiz||'—'}</td><td>${r.price?fmt2(r.price)+' ₽':'<span class="neg">0</span>'}</td><td style="text-align:left">${tag}</td></tr>`;}).join('');}
+
+function renderReg(){const arr=[...REG];
+  document.getElementById('page-reg').innerHTML=`<div class="mg">
+    ${kpi('КИЗ в реестре',fmt(arr.length),'g','уже выгружены в ЧЗ')}
+    ${kpi('Хранилище',SERVER_ACTIVE?'сервер':'браузер','',SERVER_ACTIVE?'общий для всех · KV':'localStorage')}
+    ${kpi('Последняя загрузка',loadedAt?loadedAt.toLocaleDateString('ru-RU'):'—','',SRC)}
+    ${kpi('Режим',SERVER_ACTIVE?'команда':'офлайн','', SERVER_ACTIVE?'любое устройство':'этот компьютер')}</div>
+    <div class="sec"><div class="sh"><div class="st">Накопительный реестр выгруженных КИЗ</div><div style="display:flex;gap:8px"><button class="b" onclick="exportReg()" ${arr.length?'':'disabled'}>↧ Скачать</button><button class="b act" onclick="clearReg()" ${arr.length?'':'disabled'}>Очистить</button></div></div>
+    <div class="note" style="max-width:100%;margin:0 0 10px">Сюда попадают все КИЗ, выгруженные кнопкой «Экспорт для Честного знака». При следующих выгрузках они исключаются — <b>дублей в оборот не уйдёт</b>. ${SERVER_ACTIVE?'Реестр общий на сервере: сотрудник на любом устройстве видит одно и то же.':'Внимание: в офлайн-режиме реестр локальный (только этот браузер).'}</div>
+    <div class="sw"><table><thead><tr><th>№</th><th>КИЗ (31 символ)</th></tr></thead><tbody>${arr.length?arr.slice(0,1000).map((k,i)=>`<tr><td style="text-align:left;font-weight:400;color:var(--ink3)">${i+1}</td><td style="text-align:left" class="kiz">${k}</td></tr>`).join(''):'<tr class="empty"><td colspan="2">Реестр пуст</td></tr>'}</tbody></table></div></div>`;}
+
+/* ═══════════ EXPORT ═══════════ */
+function download(name,text){const b=new Blob(['\uFEFF'+text],{type:'text/csv;charset=utf-8'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
+async function exportChZ(statusesStr){
+  const statuses=statusesStr.split(',');const exp=exportable(filtered(statuses));
+  if(!exp.length){toast('Нет новых КИЗ к выгрузке');return;}
+  const csv=['КИЗ;Цена',...exp.map(r=>`${r.kiz};${fmt2(r.price)}`)].join('\n');
+  download(`ЧЗ_возврат_в_оборот_${new Date().toISOString().slice(0,10)}.csv`,csv);
+  const kizList=exp.map(r=>r.kiz);
+  if(SERVER_ACTIVE){
+    try{const r=await srv('?action=markExported',{method:'POST',body:JSON.stringify({kiz:kizList})});
+      if(r.ok){await loadRegistry();toast(`Выгружено ${exp.length} · добавлено в общий реестр`);}else toast('Файл скачан, но реестр не обновился (HTTP '+r.status+')');}
+    catch(e){toast('Файл скачан, но реестр не обновился: '+e.message);}
+  }else{kizList.forEach(k=>REG.add(k));saveRegLocal();toast(`Выгружено ${exp.length} КИЗ · реестр (локальный)`);}
+  render();renderDiag();
+}
+function exportReg(){download(`реестр_КИЗ_${new Date().toISOString().slice(0,10)}.csv`,['КИЗ',...REG].join('\n'));}
+async function clearReg(){if(!confirm('Очистить реестр выгруженных КИЗ? Отменить нельзя.'))return;
+  if(SERVER_ACTIVE){try{const r=await srv('?action=clearRegistry',{method:'POST'});if(r.ok){REG=new Set();toast('Реестр очищен (сервер)');}}catch(e){toast('Ошибка: '+e.message);}}
+  else{REG=new Set();saveRegLocal();toast('Реестр очищен');}
+  render();renderDiag();}
+
+/* ═══════════ DIAGNOSTICS ═══════════ */
+let diagShown=false;
+function toggleDiag(){diagShown=!diagShown;renderDiag();}
+function renderDiag(){let d=document.getElementById('diagPanel');
+  if(!d){d=document.createElement('div');d.id='diagPanel';d.className='diag';document.querySelector('.main').insertBefore(d,document.getElementById('page-over'));}
+  d.classList.toggle('show',diagShown&&ROWS.length>0);if(!diagShown||!ROWS.length)return;
+  const out=ROWS.filter(r=>OUT_ST.includes(r.status)),ret=ROWS.filter(r=>RET_ST.includes(r.status));
+  const noKiz=ROWS.filter(r=>(OUT_ST.includes(r.status)||RET_ST.includes(r.status))&&!r.kiz).length;
+  const zero=ROWS.filter(r=>(OUT_ST.includes(r.status)||RET_ST.includes(r.status))&&r.kiz&&r.price<=0).length;
+  const kizAll=ROWS.filter(r=>r.kiz).map(r=>r.kiz);const dup=kizAll.length-new Set(kizAll).size;
+  const line=(st,name,val,msg)=>`<tr><td><span class="dot ${st}"></span>${name}</td><td>${val}</td><td style="color:var(--ink3)">${msg||''}</td></tr>`;
+  let srvLines=DIAG_SRV.map(x=>line(x.status||'ok',(x.co?x.co+' · ':'')+x.name,x.rows,x.msg||'')).join('');
+  d.innerHTML=`<b>Диагностика</b> <span style="color:var(--ink3)">· ${loadedAt?loadedAt.toLocaleString('ru-RU'):'—'} · ${SRC} · режим: ${SERVER_ACTIVE?'сервер':'офлайн'}</span>
+    <table style="margin-top:6px">
+    ${line('ok','Всего строк',ROWS.length,'')}
+    ${line('ok','К выводу (sorted/ready)',out.length,'')}
+    ${line('ok','К возврату (отказы)',ret.length,'')}
+    ${line(noKiz?'warn':'ok','Без КИЗ',noKiz,noKiz?'не попадут в выгрузку':'')}
+    ${line(zero?'warn':'ok','Цена 0',zero,zero?'исключены':'')}
+    ${line(dup?'warn':'ok','Дубли КИЗ',dup,dup?'берётся один раз':'')}
+    ${line('ok','В реестре',REG.size,SERVER_ACTIVE?'общий (сервер)':'локальный')}
+    ${srvLines}
+    </table>`;
+}
+
+/* ═══════════ DEMO ═══════════ */
+function loadDemo(){const arts=[['sock-black-40','Носки'],['ring-7548','Кольцо'],['tee-oversize-L','Футболка'],['cap-beige','Кепка'],['hoodie-grey-M','Худи']];const cos=['ИП1','ИП1','ИП2'];const sts=['canceled_by_client','canceled_by_client','sorted','ready_for_pickup','sold'];const rows=[];let seed=7;const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280;};
+  for(let i=0;i<46;i++){const[art,pr]=arts[Math.floor(rnd()*arts.length)];const st=sts[Math.floor(rnd()*sts.length)];const mo=6+Math.floor(rnd()*3);const day=String(1+Math.floor(rnd()*27)).padStart(2,'0');const gtin=String(4607177590000+Math.floor(rnd()*99999)).slice(0,13);const serial=Math.random().toString(36).slice(2,15).padEnd(13,'0');let kiz='01'+('0'+gtin).slice(0,14)+'21'+serial;let price=[290,590,890,1290,1990,2490][Math.floor(rnd()*6)];if(rnd()<0.06)price=0;if(rnd()<0.05)kiz='';if(rnd()<0.05&&rows.length)kiz=rows[rows.length-1].kiz;rows.push({date:`2026-${String(mo).padStart(2,'0')}-${day}`,orderid:13800000+i,ип:cos[Math.floor(rnd()*cos.length)],статус:st,артикул:art,предмет:pr,киз:kiz,цена:price});}
+  ingest(rows,'демо-данные');}
+
+/* ═══════════ MISC ═══════════ */
+let toastT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
+function bindDrop(){const drop=document.getElementById('drop');if(!drop)return;['dragenter','dragover'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('over');}));['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();if(e==='drop'&&ev.dataTransfer.files[0])readFile(ev.dataTransfer.files[0]);if(e!=='dragover')drop.classList.remove('over');}));}
+setInterval(()=>{const c=document.getElementById('clk');if(c)c.textContent=new Date().toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});},1000);
+document.getElementById('clk').textContent=new Date().toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+boot();
+</script>
+</body>
+</html>
