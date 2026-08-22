@@ -23,20 +23,13 @@ body{font-family:'Comfortaa',sans-serif;background:var(--bg);color:var(--ink);fo
 .b.act{background:var(--amber);color:#fff;border-color:var(--amber)}
 .b.gr{background:var(--green);color:#fff;border-color:var(--green)}.b.gr:hover{opacity:.9}
 .main{padding:14px 16px;max-width:2000px;margin:0 auto}
-.fbar{background:var(--card);border:1px solid var(--border2);border-radius:11px;padding:10px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.fbar{background:var(--card);border:1px solid var(--border2);border-radius:11px;padding:10px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
 .fitem{display:flex;align-items:center;gap:7px}
 .fitem>label{font-size:10px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em}
 .sel{padding:5px 9px;font-size:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--ink);font-family:inherit;outline:0;cursor:pointer}
 .sel:focus{border-color:var(--ink)}
-.search{padding:5px 9px;font-size:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--ink);font-family:inherit;outline:0;min-width:190px}
-.ctog{display:inline-flex;background:var(--bg);border-radius:7px;padding:2px;gap:1px}
-.ctog button{padding:5px 11px;border:0;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;background:0;color:var(--ink3)}
-.ctog button.on{background:var(--ink);color:var(--bg3)}
+.search{padding:5px 9px;font-size:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;color:var(--ink);font-family:inherit;outline:0;min-width:220px}
 .fspacer{margin-left:auto;font-size:10px;color:var(--ink3)}
-.mchips{display:inline-flex;flex-wrap:wrap;gap:3px}
-.mchip{padding:4px 8px;border:1px solid var(--border2);border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--bg3);color:var(--ink2)}
-.mchip.on{background:var(--ink);color:var(--bg3);border-color:var(--ink)}
-.mchip.nodata{opacity:.3;text-decoration:line-through}
 .mg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
 .mc{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:12px 15px}
 .ml{font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.12em;font-weight:700;margin-bottom:6px}
@@ -51,6 +44,8 @@ table{width:100%;border-collapse:collapse}
 thead th{text-align:right;padding:6px 8px;font-size:8.5px;font-weight:700;color:var(--ink3);background:var(--bg3);text-transform:uppercase;letter-spacing:.02em;border-bottom:1px solid var(--border);font-family:inherit;white-space:nowrap;position:sticky;top:0;z-index:5;line-height:1.15}
 thead th:first-child{text-align:left}
 thead th.hl{background:var(--hl2)!important;color:var(--amber)!important}
+.thsort{cursor:pointer;user-select:none}.thsort:hover{color:var(--ink)}
+.arr{color:var(--ink);font-size:9px}
 tbody td{padding:5px 8px;color:var(--ink);border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:11.5px;position:relative}
 tbody td:first-child{text-align:left;font-weight:700;color:var(--ink2)}
 tbody tr:hover{background:var(--bg3)}
@@ -67,6 +62,9 @@ td span.v{position:relative;z-index:1}
 .pill.s-ready{background:rgba(160,104,32,.14);color:var(--amber)}
 .pill.s-cancel{background:rgba(184,64,64,.12);color:var(--red)}
 .pill.s-sold{background:rgba(45,122,79,.13);color:var(--green)}
+.pill.s-wait{background:var(--bg);color:var(--ink3)}
+.pill.s-deliv{background:rgba(10,125,107,.13);color:#0a7d6b}
+.pill.s-ret{background:rgba(120,80,160,.15);color:#6b4a8a}
 .pill.s-other{background:var(--bg);color:var(--ink3)}
 .tagdone{font-size:8px;background:var(--green);color:#fff;padding:1px 6px;border-radius:4px;font-weight:700}
 .tagnew{font-size:8px;background:var(--ink);color:var(--bg3);padding:1px 6px;border-radius:4px;font-weight:700}
@@ -88,7 +86,7 @@ td span.v{position:relative;z-index:1}
 .drop .dt{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px}
 .drop .ds{font-size:12px;color:var(--ink3);line-height:1.6;margin-bottom:16px}
 .drop .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.note{max-width:520px;margin:12px auto 0;font-size:11px;color:var(--ink3);line-height:1.6;text-align:left;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:11px 13px}
+.note{max-width:100%;margin:12px 0 0;font-size:11px;color:var(--ink3);line-height:1.6;text-align:left;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:11px 13px}
 .note b{color:var(--ink2)}.note code{background:var(--bg2);padding:1px 5px;border-radius:4px;font-size:10.5px}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg3);padding:11px 18px;border-radius:10px;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transition:.2s;z-index:300;box-shadow:0 8px 30px rgba(0,0,0,.2)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -124,13 +122,7 @@ td span.v{position:relative;z-index:1}
 <div class="main">
   <div class="fbar" id="fbar" style="display:none">
     <div class="fitem"><label>ИП</label><select class="sel" id="fCo" onchange="render()"></select></div>
-    <div class="fitem" id="monthWrap"><label>Месяцы</label><div class="mchips" id="fMonths"></div></div>
     <div class="fitem"><label>Поиск</label><input class="search" id="fSearch" placeholder="артикул или КИЗ…" oninput="render()"></div>
-    <div class="fitem" id="grpWrap"><label>Срез</label><div class="ctog" id="grp">
-      <button class="on" data-g="month" onclick="setGrp('month')">Месяц</button>
-      <button data-g="predmet" onclick="setGrp('predmet')">Предмет</button>
-      <button data-g="artikul" onclick="setGrp('artikul')">Артикул</button>
-    </div></div>
     <div class="fspacer" id="fInfo"></div>
   </div>
 
@@ -146,7 +138,7 @@ td span.v{position:relative;z-index:1}
   <div class="oc">
     <h3>Вставить данные (офлайн)</h3>
     <p>CSV/TSV с заголовком в первой строке, либо JSON-массив объектов.</p>
-    <textarea id="pasteTa" placeholder="дата;orderId;ИП;статус;артикул;предмет;КИЗ;цена"></textarea>
+    <textarea id="pasteTa" placeholder="дата;orderId;ИП;статус;артикул;КИЗ;цена"></textarea>
     <div class="row"><button class="b" onclick="closePaste()">Отмена</button><button class="b pri" onclick="applyPaste()">Загрузить</button></div>
   </div>
 </div>
@@ -157,17 +149,16 @@ td span.v{position:relative;z-index:1}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 /* ═══════════ КОНФИГ ═══════════ */
-/* Впиши сюда URL своего воркера (после деплоя worker.js), напр.:
-   const WORKER = 'https://kiz.ooo6311ooo.workers.dev';
-   Пусто -> дашборд работает в офлайн-режиме (файл/вставка/демо). */
-const WORKER = 'https://kiz.ooo6311ooo.workers.dev';
+const WORKER = 'https://kiz.ooo6311ooo.workers.dev';   /* твой адрес воркера; пусто = офлайн-режим */
 
 /* ═══════════ STATE ═══════════ */
-const MONTHS=['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
 const LS_REG='kiz_registry_v1', TRIM=31;
-const OUT_ST=['sorted','ready_for_pickup'], RET_ST=['canceled_by_client'];
-let ROWS=[], curTab='over', grpMode='month', selMonths=new Set();
-let SRC='—', loadedAt=null, SERVER=!!WORKER, REG=new Set(), COMPANIES=[];
+const OUT_ST=['sorted','ready_for_pickup']; // ВЫВОД из оборота = отгружено на ПВЗ/СЦ
+const RET_ST=['canceled_by_client'];   // ВОЗВРАТ в оборот = отказ клиента
+const ACTION_ST=[...OUT_ST,...RET_ST];
+let ROWS=[], curTab='over', SERVER=!!WORKER, SERVER_ACTIVE=!!WORKER, REG=new Set(), COMPANIES=[];
+let SRC='—', loadedAt=null, DIAG_SRV=[];
+const SORT={};                          // tableId -> {key,dir}
 
 function getPass(){try{return sessionStorage.getItem('kiz_pass')||'';}catch(e){return '';}}
 function setPass(p){try{sessionStorage.setItem('kiz_pass',p);}catch(e){}}
@@ -184,75 +175,56 @@ function askPassword(msg){
   const ph=document.getElementById('placeholder'); ph.style.display='block';
   document.getElementById('fbar').style.display='none';
   ['over','out','ret','reg'].forEach(p=>document.getElementById('page-'+p).style.display='none');
-  ph.innerHTML=`<div class="gate">
-    <div class="gt">КИЗ · возврат в оборот</div>
+  ph.innerHTML=`<div class="gate"><div class="gt">КИЗ · возврат в оборот</div>
     <div class="gs">${msg||'Введите пароль для доступа к данным'}</div>
     <input id="passInp" type="password" placeholder="пароль" onkeydown="if(event.key==='Enter')submitPass()">
-    <div class="err" id="passErr"></div>
-  </div>`;
+    <div class="err" id="passErr"></div></div>`;
   setTimeout(()=>{const i=document.getElementById('passInp');if(i)i.focus();},50);
 }
 function submitPass(){const i=document.getElementById('passInp');if(i){setPass(i.value.trim());loadServer();}}
 
 /* ═══════════ SERVER ═══════════ */
-async function srv(qs,opts){
-  return fetch(WORKER+qs,Object.assign({headers:{'X-Access-Key':getPass(),'Content-Type':'application/json'}},opts||{}));
-}
+async function srv(qs,opts){return fetch(WORKER+qs,Object.assign({headers:{'X-Access-Key':getPass(),'Content-Type':'application/json'}},opts||{}));}
 async function loadServer(refresh){
   const btn=document.getElementById('reloadBtn'); if(btn)btn.disabled=true;
   const ph=document.getElementById('placeholder'); ph.style.display='block'; ph.innerHTML='Загрузка данных из WB…';
   try{
     const r=await srv('?data=orders'+(refresh?'&refresh=1':''));
     if(r.status===401){setPass('');askPassword('Неверный пароль, попробуйте ещё раз');if(btn)btn.disabled=false;return;}
-    if(!r.ok){const t=await r.text();throw new Error('HTTP '+r.status+' '+t.slice(0,160));}
-    const data=await r.json();
-    if(data.error) throw new Error(data.error);
-    await loadRegistry();
-    ingestServer(data);
+    if(!r.ok){throw new Error('HTTP '+r.status+' '+(await r.text()).slice(0,160));}
+    const data=await r.json(); if(data.error) throw new Error(data.error);
+    await loadRegistry(); SERVER_ACTIVE=true; ingestServer(data);
   }catch(e){
-    ph.style.display='block';
-    ph.innerHTML=`<div class="gate"><div class="gt">Не удалось загрузить</div>
-      <div class="gs">${e.message}</div>
+    ph.innerHTML=`<div class="gate"><div class="gt">Не удалось загрузить</div><div class="gs">${e.message}</div>
       <button class="b" onclick="loadServer(true)">Повторить</button>
       <button class="b" onclick="setPass('');askPassword()" style="margin-left:6px">Сменить пароль</button>
-      <div style="margin-top:14px"><button class="b" onclick="openOffline()">Перейти в офлайн-режим</button></div>
-    </div>`;
+      <div style="margin-top:14px"><button class="b" onclick="openOffline()">Офлайн-режим</button></div></div>`;
   }
   if(btn)btn.disabled=false;
 }
-async function loadRegistry(){
-  try{const r=await srv('?data=registry');if(r.ok){const j=await r.json();REG=new Set((j.kiz||[]).map(k=>String(k).slice(0,TRIM)));}}
-  catch(e){}
-}
+async function loadRegistry(){try{const r=await srv('?data=registry');if(r.ok){const j=await r.json();REG=new Set((j.kiz||[]).map(k=>String(k).slice(0,TRIM)));}}catch(e){}}
 function ingestServer(data){
   COMPANIES=data.companies||[];
   ROWS=(data.rows||[]).map(mapRow);
-  SRC='WB API · окно '+(data.window||90)+' дн.'; loadedAt=data.builtAt?new Date(data.builtAt):new Date();
-  DIAG_SRV=data.diag||[];
+  SRC='WB API · окно '+(data.window||90)+' дн.'; loadedAt=data.builtAt?new Date(data.builtAt):new Date(); DIAG_SRV=data.diag||[];
   document.getElementById('placeholder').style.display='none';
   buildFilters(COMPANIES);
   document.getElementById('fbar').style.display='flex';
   toast(`Загружено ${ROWS.length} строк из WB`);
   render(); renderDiag();
 }
-let DIAG_SRV=[];
 
-/* ═══════════ OFFLINE MODE ═══════════ */
+/* ═══════════ OFFLINE ═══════════ */
 function showDrop(){
   const ph=document.getElementById('placeholder'); ph.style.display='block';
-  ph.innerHTML=`<div class="drop" id="drop">
-    <div class="dt">Офлайн-режим</div>
-    <div class="ds">Воркер не настроен. Перетащите файл выгрузки (.csv/.xlsx/.json)<br>или вставьте данные вручную. ${SERVER?'':'<br><span style="color:var(--amber)">Для работы всей команды из браузера настройте воркер (см. SETUP.md).</span>'}</div>
-    <div class="row">
-      <button class="b pri" onclick="pickFile()">Выбрать файл</button>
+  ph.innerHTML=`<div class="drop" id="drop"><div class="dt">Офлайн-режим</div>
+    <div class="ds">Перетащите файл выгрузки (.csv/.xlsx/.json) или вставьте данные.</div>
+    <div class="row"><button class="b pri" onclick="pickFile()">Выбрать файл</button>
       <button class="b" onclick="openPaste()">Вставить</button>
-      <button class="b" onclick="loadDemo()">Демо-данные</button>
-    </div></div>
-  <div class="note"><b>Колонки:</b> <code>дата</code>, <code>orderId</code>, <code>ИП</code>, <code>статус</code>, <code>артикул</code>, <code>предмет</code>, <code>КИЗ</code>, <code>цена</code>. Минимум — КИЗ, цена, статус.</div>`;
+      <button class="b" onclick="loadDemo()">Демо-данные</button></div></div>`;
   bindDrop();
 }
 function openOffline(){SERVER_ACTIVE=false;showDrop();}
-let SERVER_ACTIVE=SERVER;
 
 /* ═══════════ PARSERS (офлайн) ═══════════ */
 const ALIAS={date:['дата','date','createdat','created'],id:['orderid','id','номер заказа','заказ','order'],
@@ -268,15 +240,14 @@ function parseJSON(t){const a=JSON.parse(t);if(!Array.isArray(a))throw new Error
 /* ═══════════ NORMALIZE ═══════════ */
 function coercePrice(v){if(v==null||v==='')return 0;let s=String(v).replace(/\s/g,'').replace(/₽|руб\.?/gi,'').replace(',','.');const n=parseFloat(s);return isFinite(n)?n:0;}
 function parseDate(v){if(!v)return null;const s=String(v).trim();let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return {y:+m[1],mo:+m[2]};m=s.match(/^(\d{2})\.(\d{2})\.(\d{4})/);if(m)return {y:+m[3],mo:+m[2]};const d=new Date(s);if(!isNaN(d))return {y:d.getFullYear(),mo:d.getMonth()+1};return null;}
-function normStatus(v){const s=String(v||'').trim().toLowerCase();if(s.includes('sorted'))return 'sorted';if(s.includes('ready')||s.includes('pickup')||s.includes('готов'))return 'ready_for_pickup';if((s.includes('cancel')&&s.includes('client'))||s.includes('отказ'))return 'canceled_by_client';if(s.includes('sold')||s.includes('выкуп'))return 'sold';return s||'—';}
-function mapRow(r){const kizRaw=String(r.kiz||'').trim();const dt=parseDate(r.date);return {date:r.date||'',y:dt?dt.y:0,mo:dt?dt.mo:0,id:String(r.id||'').trim(),co:String(r.co||'—').trim()||'—',status:normStatus(r.status),art:String(r.art||r.article||'').trim(),predmet:String(r.predmet||'').trim()||'—',kizFull:kizRaw,kiz:kizRaw.slice(0,TRIM),price:coercePrice(r.price)};}
+function mapRow(r){const kizRaw=String(r.kiz||'').trim();const dt=parseDate(r.date);const dstr=String(r.date||'').slice(0,10);return {date:dstr,y:dt?dt.y:0,mo:dt?dt.mo:0,id:String(r.id||'').trim(),co:String(r.co||'—').trim()||'—',status:String(r.status||'').trim(),art:String(r.art||r.article||'').trim(),kizFull:kizRaw,kiz:kizRaw.slice(0,TRIM),price:coercePrice(r.price)};}
 function normalize(raw){return raw.map(mapRow);}
 
-/* ═══════════ FILE / PASTE (офлайн) ═══════════ */
+/* ═══════════ FILE / PASTE ═══════════ */
 function pickFile(){document.getElementById('fileInp').click();}
 function onFile(e){const f=e.target.files[0];if(f)readFile(f);e.target.value='';}
 function readFile(f){const name=f.name.toLowerCase();const rd=new FileReader();
-  if(name.endsWith('.xlsx')){rd.onload=ev=>{try{if(typeof XLSX==='undefined')throw new Error('XLSX не загрузился, сохраните CSV');const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];const aoa=XLSX.utils.sheet_to_json(ws,{header:1,raw:false});const csv=aoa.map(r=>r.map(c=>`"${String(c==null?'':c).replace(/"/g,'""')}"`).join(';')).join('\n');ingest(parseCSV(csv),f.name);}catch(err){toast('Ошибка XLSX: '+err.message);}};rd.readAsArrayBuffer(f);}
+  if(name.endsWith('.xlsx')){rd.onload=ev=>{try{if(typeof XLSX==='undefined')throw new Error('XLSX не загрузился');const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];const aoa=XLSX.utils.sheet_to_json(ws,{header:1,raw:false});const csv=aoa.map(r=>r.map(c=>`"${String(c==null?'':c).replace(/"/g,'""')}"`).join(';')).join('\n');ingest(parseCSV(csv),f.name);}catch(err){toast('Ошибка XLSX: '+err.message);}};rd.readAsArrayBuffer(f);}
   else{rd.onload=ev=>{const t=ev.target.result;try{ingest(name.endsWith('.json')?parseJSON(t):parseCSV(t),f.name);}catch(err){toast('Ошибка: '+err.message);}};rd.readAsText(f,'utf-8');}}
 function openPaste(){document.getElementById('pasteOv').classList.add('show');setTimeout(()=>document.getElementById('pasteTa').focus(),40);}
 function closePaste(){document.getElementById('pasteOv').classList.remove('show');}
@@ -287,94 +258,112 @@ function ingest(raw,src){const rows=normalize(raw);if(!rows.length){toast('Ст�
   document.getElementById('placeholder').style.display='none';buildFilters(COMPANIES);
   document.getElementById('fbar').style.display='flex';toast(`Загружено ${rows.length} строк · ${src}`);render();renderDiag();}
 
-/* ═══════════ RELOAD ═══════════ */
+/* ═══════════ RELOAD / FILTERS ═══════════ */
 function reload(){ if(SERVER&&SERVER_ACTIVE) loadServer(true); else if(ROWS.length) render(); else boot(); }
-
-/* ═══════════ FILTERS ═══════════ */
-function buildFilters(cos){
-  const list=['ВСЕ',...(cos||[]).filter(Boolean)];
-  document.getElementById('fCo').innerHTML=list.map(c=>`<option value="${c}">${c==='ВСЕ'?'Все ИП':c}</option>`).join('');
-  const mos=[...new Set(ROWS.filter(r=>r.mo).map(r=>r.mo))].sort((a,b)=>a-b);
-  selMonths=new Set(mos);
-  document.getElementById('monthWrap').style.display=mos.length?'flex':'none';
-  document.getElementById('fMonths').innerHTML=MONTHS.map((m,i)=>{const n=i+1,has=mos.includes(n);return `<button class="mchip ${selMonths.has(n)?'on':''} ${has?'':'nodata'}" onclick="toggleMonth(${n})">${m}</button>`;}).join('');
-}
-function toggleMonth(n){if(selMonths.has(n))selMonths.delete(n);else selMonths.add(n);document.querySelectorAll('#fMonths .mchip')[n-1].classList.toggle('on');render();}
-function setGrp(g){grpMode=g;document.querySelectorAll('#grp button').forEach(b=>b.classList.toggle('on',b.dataset.g===g));render();}
+function buildFilters(cos){const list=['ВСЕ',...(cos||[]).filter(Boolean)];
+  document.getElementById('fCo').innerHTML=list.map(c=>`<option value="${c}">${c==='ВСЕ'?'Все ИП':c}</option>`).join('');}
 function curCoVal(){return document.getElementById('fCo').value;}
 function filtered(statuses){const co=curCoVal();const q=document.getElementById('fSearch').value.trim().toLowerCase();
-  return ROWS.filter(r=>{if(statuses&&!statuses.includes(r.status))return false;if(co!=='ВСЕ'&&r.co!==co)return false;if(r.mo&&selMonths.size&&!selMonths.has(r.mo))return false;if(q&&!(r.art.toLowerCase().includes(q)||r.kizFull.toLowerCase().includes(q)||r.predmet.toLowerCase().includes(q)))return false;return true;});}
+  return ROWS.filter(r=>{if(statuses&&!statuses.includes(r.status))return false;if(co!=='ВСЕ'&&r.co!==co)return false;if(q&&!(r.art.toLowerCase().includes(q)||r.kizFull.toLowerCase().includes(q)))return false;return true;});}
 
 /* ═══════════ HELPERS ═══════════ */
 function fmt(n){return Math.round(n).toLocaleString('ru-RU');}
 function fmt2(n){return n.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function pillOf(s){const map={sorted:['s-sorted','sorted'],ready_for_pickup:['s-ready','ready_for_pickup'],canceled_by_client:['s-cancel','отказ клиента'],sold:['s-sold','выкуплен']};const[c,t]=map[s]||['s-other',s];return `<span class="pill ${c}">${t}</span>`;}
-function statusList(rows){const m={};rows.forEach(r=>{m[r.status]=m[r.status]||{n:0,sum:0};m[r.status].n++;m[r.status].sum+=r.price;});return m;}
+const PILL={sold:['s-sold','выкуплен'],canceled_by_client:['s-cancel','отказ клиента'],canceled:['s-cancel','отменён'],
+  declined_by_client:['s-cancel','отказ (1 час)'],sorted:['s-sorted','sorted'],ready_for_pickup:['s-ready','ready_for_pickup'],
+  waiting:['s-wait','ожидает'],delivered:['s-deliv','доставлен'],returned:['s-ret','возврат покупателя'],defect:['s-wait','брак']};
+function pillOf(s){const[c,t]=PILL[s]||['s-other',s||'—'];return `<span class="pill ${c}">${t}</span>`;}
 function exportable(rows){const seen=new Set();return rows.filter(r=>{if(!r.kiz)return false;if(r.price<=0)return false;if(REG.has(r.kiz))return false;if(seen.has(r.kiz))return false;seen.add(r.kiz);return true;});}
+function stateOf(r){return !r.kiz?'нет КИЗ':r.price<=0?'цена 0':REG.has(r.kiz)?'в реестре':'к выгрузке';}
+function stateTag(r){const m={'нет КИЗ':'tagbad','цена 0':'tagbad','в реестре':'tagdone','к выгрузке':'tagnew'};const s=stateOf(r);return `<span class="${m[s]}">${s}</span>`;}
+function stateOrder(r){return {'к выгрузке':0,'в реестре':1,'цена 0':2,'нет КИЗ':3}[stateOf(r)];}
+
+/* ═══════════ SORTABLE TABLE ═══════════ */
+function sortBy(tid,key){const s=SORT[tid]||{key:null,dir:1};if(s.key===key)s.dir=-s.dir;else{s.key=key;s.dir=1;}SORT[tid]=s;render();}
+function th(col,tid){const s=SORT[tid]||{};const arrow=s.key===col.key?`<span class="arr">${s.dir<0?'▾':'▴'}</span>`:'';
+  const al=col.align==='right'?'':'style="text-align:left"';
+  return `<th ${al} class="thsort ${col.hl?'hl':''}" title="${(col.tip||'').replace(/"/g,'&quot;')}" onclick="sortBy('${tid}','${col.key}')">${col.label} ${arrow}</th>`;}
+function applySort(tid,rows,cols){const s=SORT[tid];if(!s||!s.key)return rows;const col=cols.find(c=>c.key===s.key);const val=(col&&col.sortVal)?col.sortVal:(r=>r[s.key]);
+  return [...rows].sort((a,b)=>{let x=val(a),y=val(b);if(typeof x==='string')x=x.toLowerCase();if(typeof y==='string')y=y.toLowerCase();if(x<y)return -s.dir;if(x>y)return s.dir;return 0;});}
+function tableHTML(tid,cols,rows,footer){const sorted=applySort(tid,rows,cols);
+  const head=cols.map(c=>th(c,tid)).join('');
+  const body=sorted.length?sorted.map(r=>'<tr>'+cols.map(c=>{const al=c.align==='right'?'':'style="text-align:left"';return `<td ${al} class="${c.hl?'hl':''}">${c.cell?c.cell(r):(r[c.key]??'')}</td>`;}).join('')+'</tr>').join(''):`<tr class="empty"><td colspan="${cols.length}">Пусто под фильтром</td></tr>`;
+  return `<div class="sw"><table><thead><tr>${head}</tr></thead><tbody>${body}${footer||''}</tbody></table></div>`;}
 
 /* ═══════════ RENDER ═══════════ */
 function tab(name){curTab=name;document.querySelectorAll('#tabs .tab').forEach(b=>b.classList.toggle('on',b.dataset.p===name));
   ['over','out','ret','reg'].forEach(p=>document.getElementById('page-'+p).style.display=p===name?'block':'none');
-  document.getElementById('fbar').style.display=(ROWS.length&&name!=='reg')?'flex':'none';
-  document.getElementById('grpWrap').style.display=(name==='out'||name==='ret')?'flex':'none';render();}
+  document.getElementById('fbar').style.display=(ROWS.length&&name!=='reg')?'flex':'none';render();}
 function render(){if(!ROWS.length)return;
   if(curTab==='over')renderOver();
-  else if(curTab==='out')renderFlow('page-out','Заказы к выводу КИЗ из оборота',OUT_ST,'вывести из оборота при отгрузке на ПВЗ/СЦ');
-  else if(curTab==='ret')renderFlow('page-ret','Заказы к возврату КИЗ в оборот',RET_ST,'вернуть в оборот (отказ до выкупа)');
+  else if(curTab==='out')renderFlow('out','page-out','Заказы к выводу КИЗ из оборота',OUT_ST,'вывести из оборота при отгрузке на ПВЗ/СЦ');
+  else if(curTab==='ret')renderFlow('ret','page-ret','Заказы к возврату КИЗ в оборот',RET_ST,'вернуть в оборот (отказ клиента)');
   else if(curTab==='reg')renderReg();
-  document.getElementById('fInfo').textContent=`источник: ${SRC} · ${ROWS.length} строк`;}
+  const fi=document.getElementById('fInfo');if(fi)fi.textContent=`источник: ${SRC} · ${ROWS.length} строк`;}
 function kpi(l,v,c,s){return `<div class="mc"><div class="ml">${l}</div><div class="mv ${c||''}">${v}</div><div class="md">${s||''}</div></div>`;}
 
 function renderOver(){
   const out=filtered(OUT_ST),ret=filtered(RET_ST);
-  const retExp=exportable(ret);
-  const bad=filtered(null).filter(r=>(OUT_ST.includes(r.status)||RET_ST.includes(r.status))&&(!r.kiz||r.price<=0));
-  const kpis=[kpi('К выводу из оборота',fmt(out.length),'b',`${fmt(out.reduce((s,r)=>s+r.price,0))} ₽ · sorted + ready`),
-    kpi('К возврату в оборот',fmt(ret.length),'r',`${fmt(ret.reduce((s,r)=>s+r.price,0))} ₽ · отказы`),
-    kpi('КИЗ готовы к выгрузке',fmt(retExp.length),'g',`${fmt(retExp.reduce((s,r)=>s+r.price,0))} ₽ · в Честный знак`),
-    kpi('Требуют внимания',fmt(bad.length),bad.length?'a':'',bad.length?'нет КИЗ или цена 0':'всё чисто')].join('');
-  const st=statusList(filtered(null));const order=['canceled_by_client','sorted','ready_for_pickup','sold'];
-  const keys=order.filter(k=>st[k]).concat(Object.keys(st).filter(k=>!order.includes(k)));
-  const maxN=Math.max(1,...keys.map(k=>st[k].n));
-  const rows=keys.map(k=>{const w=st[k].n/maxN*100;return `<tr><td>${pillOf(k)}</td><td><span class="bar bl" style="width:${w}%"></span><span class="v">${fmt(st[k].n)}</span></td><td>${fmt(st[k].sum)} ₽</td></tr>`;}).join('');
+  const exp=exportable(out).length+exportable(ret).length;
+  const expSum=exportable(out).reduce((s,r)=>s+r.price,0)+exportable(ret).reduce((s,r)=>s+r.price,0);
+  const bad=filtered(ACTION_ST).filter(r=>!r.kiz||r.price<=0).length;
+  const kpis=[
+    kpi('К выводу из оборота',fmt(out.length),'b',`${fmt(out.reduce((s,r)=>s+r.price,0))} ₽ · sorted + ready_for_pickup`),
+    kpi('К возврату в оборот',fmt(ret.length),'r',`${fmt(ret.reduce((s,r)=>s+r.price,0))} ₽ · отказы клиента`),
+    kpi('КИЗ готовы к выгрузке',fmt(exp),'b',`${fmt(expSum)} ₽ · новые, цена>0`),
+    kpi('Требуют внимания',fmt(bad),bad?'a':'',bad?'нет КИЗ или цена 0':'всё чисто')].join('');
+  // разбивка по всем статусам
+  const m={};filtered(null).forEach(r=>{const k=r.status||'—';m[k]=m[k]||{status:k,n:0,sum:0};m[k].n++;m[k].sum+=r.price;});
+  const arr=Object.values(m);const maxN=Math.max(1,...arr.map(x=>x.n));
+  const cols=[
+    {key:'status',label:'Статус',align:'left',tip:'wbStatus из WB API — статус заказа на стороне Wildberries',cell:r=>pillOf(r.status)},
+    {key:'n',label:'Заказов',align:'right',tip:'Число заказов с этим статусом (после фильтра ИП/поиск)',cell:r=>`<span class="bar bl" style="width:${r.n/maxN*100}%"></span><span class="v">${fmt(r.n)}</span>`},
+    {key:'sum',label:'Сумма',align:'right',tip:'Сумма цен заказов (finalPrice из WB), рубли',cell:r=>fmt(r.sum)+' ₽'}];
+  if(!SORT['over'])SORT['over']={key:'n',dir:-1};
   document.getElementById('page-over').innerHTML=`<div class="mg">${kpis}</div>
     <div class="sec"><div class="sh"><div class="st">Заказы по статусам</div><div class="sm2">фильтр: ${curCoVal()==='ВСЕ'?'все ИП':curCoVal()}</div></div>
-    <div class="sw"><table><thead><tr><th>Статус</th><th>Заказов</th><th>Сумма</th></tr></thead><tbody>${rows||'<tr class="empty"><td colspan="3">Нет данных</td></tr>'}</tbody></table></div></div>
-    <div class="note" style="max-width:100%;margin-top:0"><b>Рутина.</b> Вкладка <b>Возврат в оборот</b> → «Экспорт для Честного знака»: файл <code>КИЗ ; Цена</code> (КИЗ 31 символ, цена 0 и уже выгруженные исключены). Выгруженные КИЗ уходят в общий <b>Реестр</b> ${SERVER_ACTIVE?'(на сервере — виден всем сотрудникам)':'(локально в этом браузере)'} и второй раз не задвоятся.</div>`;
+    ${tableHTML('over',cols,arr)}</div>
+    <div class="note"><b>Логика.</b> «Вывод из оборота» = отгруженные заказы (<code>sorted</code>, <code>ready_for_pickup</code>): их КИЗ выводим из оборота при отгрузке на ПВЗ/СЦ. «Возврат в оборот» = отказы клиента (<code>canceled_by_client</code>): их КИЗ возвращаем. На каждой вкладке кнопка «Экспорт для Честного знака» даёт файл <code>КИЗ ; Цена</code> (КИЗ 31 символ, цена 0 и уже выгруженные исключены); выгруженные КИЗ уходят в общий реестр ${SERVER_ACTIVE?'(лист «Выгружено» в Google-таблице — виден всем)':'(локально в этом браузере)'} и второй раз не задвоятся. Наведи на заголовок таблицы — увидишь, что это и откуда; клик по заголовку сортирует.</div>`;
 }
 
-function renderFlow(pageId,title,statuses,action){
-  const rows=filtered(statuses),exp=exportable(rows);
+function renderFlow(tid,pageId,title,statuses,action){
+  const rows=filtered(statuses);
+  const exp=exportable(rows);const sumExp=exp.reduce((s,r)=>s+r.price,0);
   const inReg=rows.filter(r=>r.kiz&&REG.has(r.kiz)).length;
   const noKiz=rows.filter(r=>!r.kiz).length,zero=rows.filter(r=>r.kiz&&r.price<=0).length;
-  const sumExp=exp.reduce((s,r)=>s+r.price,0);
-  const groups={};
-  rows.forEach(r=>{const g=grpMode==='month'?(r.mo?`${MONTHS[r.mo-1]} ${r.y}`:'без даты'):grpMode==='predmet'?r.predmet:(r.art||'—');groups[g]=groups[g]||{n:0,sum:0,exp:0,done:0,bad:0};const G=groups[g];G.n++;G.sum+=r.price;if(!r.kiz||r.price<=0)G.bad++;else if(REG.has(r.kiz))G.done++;else G.exp++;});
-  const gk=Object.keys(groups).sort();const maxSum=Math.max(1,...gk.map(k=>groups[k].sum));
-  let body=gk.map(k=>{const G=groups[k];const w=G.sum/maxSum*100;return `<tr><td>${k}</td><td><span class="bar a" style="width:${w}%"></span><span class="v">${fmt(G.n)}</span></td><td>${fmt(G.sum)} ₽</td><td class="hl"><b class="pos">${fmt(G.exp)}</b></td><td>${G.done?fmt(G.done):'—'}</td><td>${G.bad?`<span class="neg">${fmt(G.bad)}</span>`:'—'}</td></tr>`;}).join('');
-  const tot=gk.reduce((a,k)=>{const G=groups[k];a.n+=G.n;a.sum+=G.sum;a.exp+=G.exp;a.done+=G.done;a.bad+=G.bad;return a;},{n:0,sum:0,exp:0,done:0,bad:0});
-  if(gk.length)body+=`<tr class="total"><td>Итого</td><td>${fmt(tot.n)}</td><td>${fmt(tot.sum)} ₽</td><td class="hl">${fmt(tot.exp)}</td><td>${fmt(tot.done)}</td><td>${fmt(tot.bad)}</td></tr>`;
-  if(!gk.length)body=`<tr class="empty"><td colspan="6">Нет заказов под фильтром</td></tr>`;
-  const kpis=[kpi('Заказов',fmt(rows.length),'',statuses.join(' + ')),kpi('КИЗ к выгрузке',fmt(exp.length),'g',`${fmt(sumExp)} ₽`),kpi('Уже в реестре',fmt(inReg),'',inReg?'исключены':'—'),kpi('Проблемные',fmt(noKiz+zero),(noKiz+zero)?'a':'',(noKiz+zero)?`нет КИЗ: ${noKiz} · цена 0: ${zero}`:'—')].join('');
+  const kpis=[kpi('Заказов',fmt(rows.length),'',statuses.join(', ')),kpi('КИЗ к выгрузке',fmt(exp.length),'g',`${fmt(sumExp)} ₽`),
+    kpi('Уже в реестре',fmt(inReg),'',inReg?'исключены':'—'),kpi('Проблемные',fmt(noKiz+zero),(noKiz+zero)?'a':'',(noKiz+zero)?`нет КИЗ: ${noKiz} · цена 0: ${zero}`:'—')].join('');
+  const cols=[
+    {key:'date',label:'Дата',align:'left',tip:'Дата создания заказа (createdAt в WB API)'},
+    {key:'co',label:'ИП',align:'left',tip:'Кабинет-продавец (какой токен WB отдал заказ)'},
+    {key:'status',label:'Статус',align:'left',tip:'wbStatus из WB API',cell:r=>pillOf(r.status),sortVal:r=>r.status},
+    {key:'art',label:'Артикул',align:'left',tip:'Артикул продавца (article в WB API)'},
+    {key:'kiz',label:'КИЗ (31)',align:'left',tip:'Код маркировки Честного знака (sgtin), обрезан до 31 символа — то, что уходит в файл',cell:r=>`<span class="kiz">${r.kiz||'—'}</span>`,sortVal:r=>r.kiz},
+    {key:'price',label:'Цена',align:'right',tip:'Цена заказа (finalPrice из WB, копейки → рубли ÷100)',cell:r=>r.price?fmt2(r.price)+' ₽':'<span class="neg">0</span>',sortVal:r=>r.price},
+    {key:'state',label:'Состояние',align:'left',tip:'к выгрузке / в реестре (уже выгружен) / нет КИЗ / цена 0',cell:r=>stateTag(r),sortVal:r=>stateOrder(r)}];
+  if(!SORT[tid])SORT[tid]={key:'date',dir:-1};
   document.getElementById(pageId).innerHTML=`<div class="mg">${kpis}</div>
-    <div class="sec"><div class="sh"><div class="st">${title}</div><div style="display:flex;gap:8px;align-items:center"><span class="sm2">${exp.length} КИЗ · ${fmt(sumExp)} ₽ к выгрузке</span><button class="b gr" onclick="exportChZ('${statuses.join(',')}')" ${exp.length?'':'disabled'}>↧ Экспорт для Честного знака</button></div></div>
-    <div class="sw"><table><thead><tr><th>${grpMode==='month'?'Месяц':grpMode==='predmet'?'Предмет':'Артикул'}</th><th>Заказов</th><th>Сумма</th><th class="hl">К выгрузке</th><th>В реестре</th><th>Проблем</th></tr></thead><tbody>${body}</tbody></table></div></div>
-    <div class="sec"><div class="sh"><div class="st">Строки — ${action}</div><div class="sm2">первые 400</div></div>
-    <div class="sw"><table><thead><tr><th>Дата</th><th>ИП</th><th>Статус</th><th>Артикул</th><th>Предмет</th><th>КИЗ (31)</th><th>Цена</th><th>·</th></tr></thead><tbody>${rowLines(rows)}</tbody></table></div></div>`;
+    <div class="sec"><div class="sh"><div class="st">${title}</div>
+      <div style="display:flex;gap:8px;align-items:center"><span class="sm2">${exp.length} КИЗ · ${fmt(sumExp)} ₽ к выгрузке</span>
+      <button class="b gr" onclick="exportChZ('${statuses.join(',')}')" ${exp.length?'':'disabled'}>↧ Экспорт для Честного знака</button></div></div>
+    <div class="sm2" style="margin:-4px 0 8px">Строки — ${action}. Наведи на заголовок для пояснения, клик — сортировка.</div>
+    ${tableHTML(tid,cols,rows)}</div>`;
 }
-function rowLines(rows){if(!rows.length)return `<tr class="empty"><td colspan="8">Пусто</td></tr>`;
-  return rows.slice(0,400).map(r=>{let tag=!r.kiz?'<span class="tagbad">нет КИЗ</span>':r.price<=0?'<span class="tagbad">цена 0</span>':REG.has(r.kiz)?'<span class="tagdone">в реестре</span>':'<span class="tagnew">к выгрузке</span>';
-    return `<tr><td style="text-align:left;font-weight:400;color:var(--ink3)">${r.date||'—'}</td><td style="text-align:left;font-weight:400">${r.co}</td><td style="text-align:left">${pillOf(r.status)}</td><td style="text-align:left;font-weight:400">${r.art||'—'}</td><td style="text-align:left;font-weight:400;color:var(--ink3)">${r.predmet}</td><td style="text-align:left" class="kiz">${r.kiz||'—'}</td><td>${r.price?fmt2(r.price)+' ₽':'<span class="neg">0</span>'}</td><td style="text-align:left">${tag}</td></tr>`;}).join('');}
 
-function renderReg(){const arr=[...REG];
+function renderReg(){
+  const arr=[...REG].map((kiz,i)=>({i:i+1,kiz}));
+  const cols=[{key:'i',label:'№',align:'left',tip:'Порядковый номер в реестре'},
+    {key:'kiz',label:'КИЗ (31 символ)',align:'left',tip:'Выгруженный код маркировки — лист «Выгружено» в Google-таблице (общий для всех)',cell:r=>`<span class="kiz">${r.kiz}</span>`}];
   document.getElementById('page-reg').innerHTML=`<div class="mg">
     ${kpi('КИЗ в реестре',fmt(arr.length),'g','уже выгружены в ЧЗ')}
-    ${kpi('Хранилище',SERVER_ACTIVE?'сервер':'браузер','',SERVER_ACTIVE?'общий для всех · KV':'localStorage')}
+    ${kpi('Хранилище',SERVER_ACTIVE?'сервер':'браузер','',SERVER_ACTIVE?'общий · Google-таблица':'localStorage')}
     ${kpi('Последняя загрузка',loadedAt?loadedAt.toLocaleDateString('ru-RU'):'—','',SRC)}
-    ${kpi('Режим',SERVER_ACTIVE?'команда':'офлайн','', SERVER_ACTIVE?'любое устройство':'этот компьютер')}</div>
-    <div class="sec"><div class="sh"><div class="st">Накопительный реестр выгруженных КИЗ</div><div style="display:flex;gap:8px"><button class="b" onclick="exportReg()" ${arr.length?'':'disabled'}>↧ Скачать</button><button class="b act" onclick="clearReg()" ${arr.length?'':'disabled'}>Очистить</button></div></div>
-    <div class="note" style="max-width:100%;margin:0 0 10px">Сюда попадают все КИЗ, выгруженные кнопкой «Экспорт для Честного знака». При следующих выгрузках они исключаются — <b>дублей в оборот не уйдёт</b>. ${SERVER_ACTIVE?'Реестр общий на сервере: сотрудник на любом устройстве видит одно и то же.':'Внимание: в офлайн-режиме реестр локальный (только этот браузер).'}</div>
-    <div class="sw"><table><thead><tr><th>№</th><th>КИЗ (31 символ)</th></tr></thead><tbody>${arr.length?arr.slice(0,1000).map((k,i)=>`<tr><td style="text-align:left;font-weight:400;color:var(--ink3)">${i+1}</td><td style="text-align:left" class="kiz">${k}</td></tr>`).join(''):'<tr class="empty"><td colspan="2">Реестр пуст</td></tr>'}</tbody></table></div></div>`;}
+    ${kpi('Режим',SERVER_ACTIVE?'команда':'офлайн','',SERVER_ACTIVE?'любое устройство':'этот компьютер')}</div>
+    <div class="sec"><div class="sh"><div class="st">Накопительный реестр выгруженных КИЗ</div>
+      <div style="display:flex;gap:8px"><button class="b" onclick="exportReg()" ${arr.length?'':'disabled'}>↧ Скачать</button><button class="b act" onclick="clearReg()" ${arr.length?'':'disabled'}>Очистить</button></div></div>
+    <div class="note" style="margin:0 0 10px">Сюда попадают все КИЗ, выгруженные кнопкой «Экспорт для Честного знака» (и по выводу, и по возврату). При следующих выгрузках они исключаются — <b>дублей не уйдёт</b>. ${SERVER_ACTIVE?'Реестр общий: лист «Выгружено» в таблице, виден всем сотрудникам.':'Внимание: офлайн-реестр локальный (только этот браузер).'}</div>
+    ${tableHTML('reg',cols,arr)}</div>`;
+}
 
 /* ═══════════ EXPORT ═══════════ */
 function download(name,text){const b=new Blob(['\uFEFF'+text],{type:'text/csv;charset=utf-8'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
@@ -382,13 +371,13 @@ async function exportChZ(statusesStr){
   const statuses=statusesStr.split(',');const exp=exportable(filtered(statuses));
   if(!exp.length){toast('Нет новых КИЗ к выгрузке');return;}
   const csv=['КИЗ;Цена',...exp.map(r=>`${r.kiz};${fmt2(r.price)}`)].join('\n');
-  download(`ЧЗ_возврат_в_оборот_${new Date().toISOString().slice(0,10)}.csv`,csv);
+  const kind=statuses.includes('canceled_by_client')?'возврат':'вывод';
+  download(`ЧЗ_${kind}_${new Date().toISOString().slice(0,10)}.csv`,csv);
   const kizList=exp.map(r=>r.kiz);
-  if(SERVER_ACTIVE){
-    try{const r=await srv('?action=markExported',{method:'POST',body:JSON.stringify({kiz:kizList})});
-      if(r.ok){await loadRegistry();toast(`Выгружено ${exp.length} · добавлено в общий реестр`);}else toast('Файл скачан, но реестр не обновился (HTTP '+r.status+')');}
-    catch(e){toast('Файл скачан, но реестр не обновился: '+e.message);}
-  }else{kizList.forEach(k=>REG.add(k));saveRegLocal();toast(`Выгружено ${exp.length} КИЗ · реестр (локальный)`);}
+  if(SERVER_ACTIVE){try{const r=await srv('?action=markExported',{method:'POST',body:JSON.stringify({kiz:kizList})});
+    if(r.ok){await loadRegistry();toast(`Выгружено ${exp.length} · в общий реестр`);}else toast('Файл скачан, реестр не обновился (HTTP '+r.status+')');}
+    catch(e){toast('Файл скачан, реестр не обновился: '+e.message);}}
+  else{kizList.forEach(k=>REG.add(k));saveRegLocal();toast(`Выгружено ${exp.length} КИЗ · реестр (локальный)`);}
   render();renderDiag();
 }
 function exportReg(){download(`реестр_КИЗ_${new Date().toISOString().slice(0,10)}.csv`,['КИЗ',...REG].join('\n'));}
@@ -404,27 +393,27 @@ function renderDiag(){let d=document.getElementById('diagPanel');
   if(!d){d=document.createElement('div');d.id='diagPanel';d.className='diag';document.querySelector('.main').insertBefore(d,document.getElementById('page-over'));}
   d.classList.toggle('show',diagShown&&ROWS.length>0);if(!diagShown||!ROWS.length)return;
   const out=ROWS.filter(r=>OUT_ST.includes(r.status)),ret=ROWS.filter(r=>RET_ST.includes(r.status));
-  const noKiz=ROWS.filter(r=>(OUT_ST.includes(r.status)||RET_ST.includes(r.status))&&!r.kiz).length;
-  const zero=ROWS.filter(r=>(OUT_ST.includes(r.status)||RET_ST.includes(r.status))&&r.kiz&&r.price<=0).length;
+  const noKiz=ROWS.filter(r=>ACTION_ST.includes(r.status)&&!r.kiz).length;
+  const zero=ROWS.filter(r=>ACTION_ST.includes(r.status)&&r.kiz&&r.price<=0).length;
   const kizAll=ROWS.filter(r=>r.kiz).map(r=>r.kiz);const dup=kizAll.length-new Set(kizAll).size;
   const line=(st,name,val,msg)=>`<tr><td><span class="dot ${st}"></span>${name}</td><td>${val}</td><td style="color:var(--ink3)">${msg||''}</td></tr>`;
-  let srvLines=DIAG_SRV.map(x=>line(x.status||'ok',(x.co?x.co+' · ':'')+x.name,x.rows,x.msg||'')).join('');
+  const srvLines=DIAG_SRV.map(x=>line(x.status||'ok',(x.co?x.co+' · ':'')+x.name,x.rows,x.msg||'')).join('');
   d.innerHTML=`<b>Диагностика</b> <span style="color:var(--ink3)">· ${loadedAt?loadedAt.toLocaleString('ru-RU'):'—'} · ${SRC} · режим: ${SERVER_ACTIVE?'сервер':'офлайн'}</span>
     <table style="margin-top:6px">
-    ${line('ok','Всего строк',ROWS.length,'')}
-    ${line('ok','К выводу (sorted/ready)',out.length,'')}
-    ${line('ok','К возврату (отказы)',ret.length,'')}
-    ${line(noKiz?'warn':'ok','Без КИЗ',noKiz,noKiz?'не попадут в выгрузку':'')}
-    ${line(zero?'warn':'ok','Цена 0',zero,zero?'исключены':'')}
+    ${line('ok','Всего строк',ROWS.length,'все статусы')}
+    ${line('ok','Вывод (sold)',out.length,'')}
+    ${line('ok','Возврат (canceled_by_client)',ret.length,'')}
+    ${line(noKiz?'warn':'ok','Без КИЗ (в действиях)',noKiz,noKiz?'не попадут в выгрузку':'')}
+    ${line(zero?'warn':'ok','Цена 0 (в действиях)',zero,zero?'исключены':'')}
     ${line(dup?'warn':'ok','Дубли КИЗ',dup,dup?'берётся один раз':'')}
-    ${line('ok','В реестре',REG.size,SERVER_ACTIVE?'общий (сервер)':'локальный')}
-    ${srvLines}
-    </table>`;
+    ${line('ok','В реестре',REG.size,SERVER_ACTIVE?'общий (таблица)':'локальный')}
+    ${srvLines}</table>`;
 }
 
 /* ═══════════ DEMO ═══════════ */
-function loadDemo(){const arts=[['sock-black-40','Носки'],['ring-7548','Кольцо'],['tee-oversize-L','Футболка'],['cap-beige','Кепка'],['hoodie-grey-M','Худи']];const cos=['ИП1','ИП1','ИП2'];const sts=['canceled_by_client','canceled_by_client','sorted','ready_for_pickup','sold'];const rows=[];let seed=7;const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280;};
-  for(let i=0;i<46;i++){const[art,pr]=arts[Math.floor(rnd()*arts.length)];const st=sts[Math.floor(rnd()*sts.length)];const mo=6+Math.floor(rnd()*3);const day=String(1+Math.floor(rnd()*27)).padStart(2,'0');const gtin=String(4607177590000+Math.floor(rnd()*99999)).slice(0,13);const serial=Math.random().toString(36).slice(2,15).padEnd(13,'0');let kiz='01'+('0'+gtin).slice(0,14)+'21'+serial;let price=[290,590,890,1290,1990,2490][Math.floor(rnd()*6)];if(rnd()<0.06)price=0;if(rnd()<0.05)kiz='';if(rnd()<0.05&&rows.length)kiz=rows[rows.length-1].kiz;rows.push({date:`2026-${String(mo).padStart(2,'0')}-${day}`,orderid:13800000+i,ип:cos[Math.floor(rnd()*cos.length)],статус:st,артикул:art,предмет:pr,киз:kiz,цена:price});}
+function loadDemo(){const arts=['Pantal.VV.bej.01','Pantal.SK.glad.bej','Pantal.AN.Bej.01','sock-black-40','cap-beige'];const cos=['ИП1','ИП1','ИП2'];
+  const sts=['sold','sold','canceled_by_client','sorted','ready_for_pickup','waiting','delivered','returned'];const rows=[];let seed=7;const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280;};
+  for(let i=0;i<60;i++){const art=arts[Math.floor(rnd()*arts.length)];const st=sts[Math.floor(rnd()*sts.length)];const mo=6+Math.floor(rnd()*3);const day=String(1+Math.floor(rnd()*27)).padStart(2,'0');const gtin=String(4607177590000+Math.floor(rnd()*99999)).slice(0,13);const serial=Math.random().toString(36).slice(2,15).padEnd(13,'0');let kiz='01'+('0'+gtin).slice(0,14)+'21'+serial;let price=[290,590,730,890,1023,1990][Math.floor(rnd()*6)];if(rnd()<0.05)price=0;if(rnd()<0.04)kiz='';if(rnd()<0.04&&rows.length)kiz=rows[rows.length-1].kiz;rows.push({date:`2026-${String(mo).padStart(2,'0')}-${day}`,orderid:13800000+i,ип:cos[Math.floor(rnd()*cos.length)],статус:st,артикул:art,киз:kiz,цена:price});}
   ingest(rows,'демо-данные');}
 
 /* ═══════════ MISC ═══════════ */

@@ -23,7 +23,9 @@
 const WB_BASE = 'https://marketplace-api.wildberries.ru';
 const DAYS = parseInt(process.env.DAYS || '90', 10);
 const PRICE_DIVISOR = parseInt(process.env.PRICE_DIVISOR || '100', 10);
-const TARGET = new Set(['sorted', 'ready_for_pickup', 'canceled_by_client']);
+// показываем все статусы; действия в дашборде: вывод = sold, возврат = canceled_by_client
+const OUT_ST = new Set(['sorted', 'ready_for_pickup']);
+const RET_ST = new Set(['canceled_by_client']);
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const round2 = n => Math.round(n * 100) / 100;
@@ -162,19 +164,21 @@ async function collect(t) {
     if (s) byId.get(id).wbStatus = s;
   }
 
-  // отбираем целевые
-  const targetIds = ids.filter(id => TARGET.has(byId.get(id).wbStatus));
-  console.log(`  целевых (sorted/ready/canceled): ${targetIds.length}`);
+  // берём ВСЕ заказы с известным статусом (фильтрация — в дашборде)
+  const keepIds = ids.filter(id => byId.get(id).wbStatus);
+  const outN = keepIds.filter(id => OUT_ST.has(byId.get(id).wbStatus)).length;
+  const retN = keepIds.filter(id => RET_ST.has(byId.get(id).wbStatus)).length;
+  console.log(`  всего: ${keepIds.length} · вывод(sorted/ready): ${outN} · возврат(canceled_by_client): ${retN}`);
 
-  // КИЗ для целевых, у кого его ещё нет
-  const needKiz = targetIds.filter(id => !byId.get(id).sgtin.length);
+  // КИЗ для всех, у кого его ещё нет инлайн
+  const needKiz = keepIds.filter(id => !byId.get(id).sgtin.length);
   const kizById = await getMeta(t.token, needKiz);
   for (const [id, arr] of kizById) if (byId.get(id)) byId.get(id).sgtin = arr;
 
   // строки
   const rows = [];
   let noKiz = 0;
-  for (const id of targetIds) {
+  for (const id of keepIds) {
     const o = byId.get(id);
     const price = round2((o.price || 0) / PRICE_DIVISOR);
     const base = { date: (o.createdAt || '').slice(0, 10), id, co: t.name, status: o.wbStatus, article: o.article };
