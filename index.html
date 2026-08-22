@@ -159,6 +159,7 @@ const ACTION_ST=[...OUT_ST,...RET_ST];
 let ROWS=[], curTab='over', SERVER=!!WORKER, SERVER_ACTIVE=!!WORKER, REG=new Set(), COMPANIES=[];
 let SRC='—', loadedAt=null, DIAG_SRV=[];
 const SORT={};                          // tableId -> {key,dir}
+let PENDING={};                         // tableId -> скачанный, но не подтверждённый батч
 
 function getPass(){try{return sessionStorage.getItem('kiz_pass')||'';}catch(e){return '';}}
 function setPass(p){try{sessionStorage.setItem('kiz_pass',p);}catch(e){}}
@@ -205,7 +206,7 @@ async function loadServer(refresh){
 async function loadRegistry(){try{const r=await srv('?data=registry');if(r.ok){const j=await r.json();REG=new Set((j.kiz||[]).map(k=>String(k).slice(0,TRIM)));}}catch(e){}}
 function ingestServer(data){
   COMPANIES=data.companies||[];
-  ROWS=(data.rows||[]).map(mapRow);
+  ROWS=(data.rows||[]).map(mapRow);PENDING={};
   SRC='WB API · окно '+(data.window||90)+' дн.'; loadedAt=data.builtAt?new Date(data.builtAt):new Date(); DIAG_SRV=data.diag||[];
   document.getElementById('placeholder').style.display='none';
   buildFilters(COMPANIES);
@@ -253,7 +254,7 @@ function openPaste(){document.getElementById('pasteOv').classList.add('show');se
 function closePaste(){document.getElementById('pasteOv').classList.remove('show');}
 function applyPaste(){const t=document.getElementById('pasteTa').value.trim();if(!t){closePaste();return;}try{ingest(t[0]==='['?parseJSON(t):parseCSV(t),'вставка');closePaste();}catch(err){toast('Не разобрал: '+err.message);}}
 function ingest(raw,src){const rows=normalize(raw);if(!rows.length){toast('Строк не найдено');return;}
-  ROWS=rows;SRC=src;loadedAt=new Date();SERVER_ACTIVE=false;REG=loadRegLocal();DIAG_SRV=[];
+  ROWS=rows;SRC=src;loadedAt=new Date();SERVER_ACTIVE=false;REG=loadRegLocal();DIAG_SRV=[];PENDING={};
   COMPANIES=[...new Set(ROWS.map(r=>r.co))].filter(c=>c&&c!=='—').sort();
   document.getElementById('placeholder').style.display='none';buildFilters(COMPANIES);
   document.getElementById('fbar').style.display='flex';toast(`Загружено ${rows.length} строк · ${src}`);render();renderDiag();}
@@ -270,9 +271,9 @@ function filtered(statuses){const co=curCoVal();const q=document.getElementById(
 function fmt(n){return Math.round(n).toLocaleString('ru-RU');}
 function fmt2(n){return n.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});}
 const PILL={sold:['s-sold','выкуплен'],canceled_by_client:['s-cancel','отказ клиента'],canceled:['s-cancel','отменён'],
-  declined_by_client:['s-cancel','отказ (1 час)'],sorted:['s-sorted','sorted'],ready_for_pickup:['s-ready','ready_for_pickup'],
+  declined_by_client:['s-cancel','отказ (1 час)'],sorted:['s-sorted','отсортирован'],ready_for_pickup:['s-ready','готов к выдаче'],
   waiting:['s-wait','ожидает'],delivered:['s-deliv','доставлен'],returned:['s-ret','возврат покупателя'],defect:['s-wait','брак']};
-function pillOf(s){const[c,t]=PILL[s]||['s-other',s||'—'];return `<span class="pill ${c}">${t}</span>`;}
+function pillOf(s){const[c,t]=PILL[s]||['s-other',s||'—'];return `<span class="pill ${c}" title="статус WB: ${s}">${t}</span>`;}
 function exportable(rows){const seen=new Set();return rows.filter(r=>{if(!r.kiz)return false;if(r.price<=0)return false;if(REG.has(r.kiz))return false;if(seen.has(r.kiz))return false;seen.add(r.kiz);return true;});}
 function stateOf(r){return !r.kiz?'нет КИЗ':r.price<=0?'цена 0':REG.has(r.kiz)?'в реестре':'к выгрузке';}
 function stateTag(r){const m={'нет КИЗ':'tagbad','цена 0':'tagbad','в реестре':'tagdone','к выгрузке':'tagnew'};const s=stateOf(r);return `<span class="${m[s]}">${s}</span>`;}
@@ -304,13 +305,12 @@ function kpi(l,v,c,s){return `<div class="mc"><div class="ml">${l}</div><div cla
 
 function renderOver(){
   const out=filtered(OUT_ST),ret=filtered(RET_ST);
-  const exp=exportable(out).length+exportable(ret).length;
-  const expSum=exportable(out).reduce((s,r)=>s+r.price,0)+exportable(ret).reduce((s,r)=>s+r.price,0);
+  const all=filtered(null);
   const bad=filtered(ACTION_ST).filter(r=>!r.kiz||r.price<=0).length;
   const kpis=[
-    kpi('К выводу из оборота',fmt(out.length),'b',`${fmt(out.reduce((s,r)=>s+r.price,0))} ₽ · sorted + ready_for_pickup`),
+    kpi('Всего заказов',fmt(all.length),'',`${fmt(all.reduce((s,r)=>s+r.price,0))} ₽ · во всех статусах`),
+    kpi('К выводу из оборота',fmt(out.length),'b',`${fmt(out.reduce((s,r)=>s+r.price,0))} ₽ · отгружено на ПВЗ/СЦ`),
     kpi('К возврату в оборот',fmt(ret.length),'r',`${fmt(ret.reduce((s,r)=>s+r.price,0))} ₽ · отказы клиента`),
-    kpi('КИЗ готовы к выгрузке',fmt(exp),'b',`${fmt(expSum)} ₽ · новые, цена>0`),
     kpi('Требуют внимания',fmt(bad),bad?'a':'',bad?'нет КИЗ или цена 0':'всё чисто')].join('');
   // разбивка по всем статусам
   const m={};filtered(null).forEach(r=>{const k=r.status||'—';m[k]=m[k]||{status:k,n:0,sum:0};m[k].n++;m[k].sum+=r.price;});
@@ -323,7 +323,7 @@ function renderOver(){
   document.getElementById('page-over').innerHTML=`<div class="mg">${kpis}</div>
     <div class="sec"><div class="sh"><div class="st">Заказы по статусам</div><div class="sm2">фильтр: ${curCoVal()==='ВСЕ'?'все ИП':curCoVal()}</div></div>
     ${tableHTML('over',cols,arr)}</div>
-    <div class="note"><b>Логика.</b> «Вывод из оборота» = отгруженные заказы (<code>sorted</code>, <code>ready_for_pickup</code>): их КИЗ выводим из оборота при отгрузке на ПВЗ/СЦ. «Возврат в оборот» = отказы клиента (<code>canceled_by_client</code>): их КИЗ возвращаем. На каждой вкладке кнопка «Экспорт для Честного знака» даёт файл <code>КИЗ ; Цена</code> (КИЗ 31 символ, цена 0 и уже выгруженные исключены); выгруженные КИЗ уходят в общий реестр ${SERVER_ACTIVE?'(лист «Выгружено» в Google-таблице — виден всем)':'(локально в этом браузере)'} и второй раз не задвоятся. Наведи на заголовок таблицы — увидишь, что это и откуда; клик по заголовку сортирует.</div>`;
+    <div class="note"><b>Логика.</b> «Вывод из оборота» = отгруженные заказы (<code>sorted</code>, <code>ready_for_pickup</code>). «Возврат в оборот» = отказы клиента (<code>canceled_by_client</code>). Работа в два шага: <b>«Скачать для ЧЗ»</b> — только файл <code>КИЗ ; Цена</code> (31 символ, цена 0 и уже выгруженные исключены), список при этом <b>не тает</b>. После реальной загрузки файла в Честный знак жмёшь <b>«Отметить выгруженными»</b> — вот тогда КИЗ уходят в общий реестр ${SERVER_ACTIVE?'(лист «Выгружено», виден всем)':'(локально)'} и пропадают из списка. Так ничего не потеряется, если файл скачали, но в ЧЗ не залили. Наведи на заголовок — подсказка; клик — сортировка.</div>`;
 }
 
 function renderFlow(tid,pageId,title,statuses,action){
@@ -342,10 +342,17 @@ function renderFlow(tid,pageId,title,statuses,action){
     {key:'price',label:'Цена',align:'right',tip:'Цена заказа (finalPrice из WB, копейки → рубли ÷100)',cell:r=>r.price?fmt2(r.price)+' ₽':'<span class="neg">0</span>',sortVal:r=>r.price},
     {key:'state',label:'Состояние',align:'left',tip:'к выгрузке / в реестре (уже выгружен) / нет КИЗ / цена 0',cell:r=>stateTag(r),sortVal:r=>stateOrder(r)}];
   if(!SORT[tid])SORT[tid]={key:'date',dir:-1};
+  const pend=PENDING[tid];
+  const pendHTML=pend?`<div class="note" style="border-color:var(--amber);background:var(--hl);margin:0 0 10px">
+      Скачан файл на <b>${pend.n} КИЗ</b> (${fmt(pend.sum)} ₽). Загрузи его в Честный знак, затем подтверди:
+      <button class="b gr" style="padding:4px 9px;margin-left:6px" onclick="confirmBatch('${tid}')">✓ Отметить выгруженными</button>
+      <button class="b" style="padding:4px 9px" onclick="cancelBatch('${tid}')">Отмена</button>
+      <br><span style="color:var(--ink3)">Пока не подтвердишь — эти КИЗ остаются в списке и не пропадут.</span></div>`:'';
   document.getElementById(pageId).innerHTML=`<div class="mg">${kpis}</div>
     <div class="sec"><div class="sh"><div class="st">${title}</div>
       <div style="display:flex;gap:8px;align-items:center"><span class="sm2">${exp.length} КИЗ · ${fmt(sumExp)} ₽ к выгрузке</span>
-      <button class="b gr" onclick="exportChZ('${statuses.join(',')}')" ${exp.length?'':'disabled'}>↧ Экспорт для Честного знака</button></div></div>
+      <button class="b gr" onclick="exportChZ('${statuses.join(',')}','${tid}')" ${exp.length?'':'disabled'}>↧ Скачать для ЧЗ</button></div></div>
+    ${pendHTML}
     <div class="sm2" style="margin:-4px 0 8px">Строки — ${action}. Наведи на заголовок для пояснения, клик — сортировка.</div>
     ${tableHTML(tid,cols,rows)}</div>`;
 }
@@ -367,19 +374,26 @@ function renderReg(){
 
 /* ═══════════ EXPORT ═══════════ */
 function download(name,text){const b=new Blob(['\uFEFF'+text],{type:'text/csv;charset=utf-8'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
-async function exportChZ(statusesStr){
+function exportChZ(statusesStr,tid){
   const statuses=statusesStr.split(',');const exp=exportable(filtered(statuses));
   if(!exp.length){toast('Нет новых КИЗ к выгрузке');return;}
   const csv=['КИЗ;Цена',...exp.map(r=>`${r.kiz};${fmt2(r.price)}`)].join('\n');
   const kind=statuses.includes('canceled_by_client')?'возврат':'вывод';
   download(`ЧЗ_${kind}_${new Date().toISOString().slice(0,10)}.csv`,csv);
-  const kizList=exp.map(r=>r.kiz);
-  if(SERVER_ACTIVE){try{const r=await srv('?action=markExported',{method:'POST',body:JSON.stringify({kiz:kizList})});
-    if(r.ok){await loadRegistry();toast(`Выгружено ${exp.length} · в общий реестр`);}else toast('Файл скачан, реестр не обновился (HTTP '+r.status+')');}
-    catch(e){toast('Файл скачан, реестр не обновился: '+e.message);}}
-  else{kizList.forEach(k=>REG.add(k));saveRegLocal();toast(`Выгружено ${exp.length} КИЗ · реестр (локальный)`);}
-  render();renderDiag();
+  PENDING[tid]={kiz:exp.map(r=>r.kiz),n:exp.length,sum:exp.reduce((s,r)=>s+r.price,0)};
+  toast(`Скачано ${exp.length} КИЗ. Файл НЕ помечен — подтверди после загрузки в ЧЗ.`);
+  render();
 }
+async function confirmBatch(tid){
+  const b=PENDING[tid]; if(!b) return;
+  const kizList=b.kiz;
+  if(SERVER_ACTIVE){try{const r=await srv('?action=markExported',{method:'POST',body:JSON.stringify({kiz:kizList})});
+    if(r.ok){await loadRegistry();toast(`Отмечено выгруженными: ${kizList.length}`);}else{toast('Не удалось отметить (HTTP '+r.status+')');return;}}
+    catch(e){toast('Ошибка: '+e.message);return;}}
+  else{kizList.forEach(k=>REG.add(k));saveRegLocal();toast(`Отмечено выгруженными: ${kizList.length}`);}
+  delete PENDING[tid]; render(); renderDiag();
+}
+function cancelBatch(tid){delete PENDING[tid];toast('Батч сброшен, ничего не отмечено');render();}
 function exportReg(){download(`реестр_КИЗ_${new Date().toISOString().slice(0,10)}.csv`,['КИЗ',...REG].join('\n'));}
 async function clearReg(){if(!confirm('Очистить реестр выгруженных КИЗ? Отменить нельзя.'))return;
   if(SERVER_ACTIVE){try{const r=await srv('?action=clearRegistry',{method:'POST'});if(r.ok){REG=new Set();toast('Реестр очищен (сервер)');}}catch(e){toast('Ошибка: '+e.message);}}
