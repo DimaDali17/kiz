@@ -152,25 +152,25 @@ td span.v{position:relative;z-index:1}
 const WORKER = 'https://kiz.ooo6311ooo.workers.dev';   /* твой адрес воркера; пусто = офлайн-режим */
 
 /* ═══════════ STATE ═══════════ */
-const LS_REG='kiz_registry_v1', TRIM=31;
+const LS_OUT='kiz_reg_out_v1', LS_RET='kiz_reg_ret_v1', TRIM=31;
 const OUT_ST=['sorted','ready_for_pickup']; // ВЫВОД из оборота = отгружено на ПВЗ/СЦ
 const RET_ST=['canceled_by_client'];   // ВОЗВРАТ в оборот = отказ клиента
 const ACTION_ST=[...OUT_ST,...RET_ST];
-let ROWS=[], curTab='over', SERVER=!!WORKER, SERVER_ACTIVE=!!WORKER, REG=new Set(), COMPANIES=[];
+let ROWS=[], curTab='over', SERVER=!!WORKER, SERVER_ACTIVE=!!WORKER, REG_OUT=new Set(), REG_RET=new Set(), COMPANIES=[];
 let SRC='—', loadedAt=null, DIAG_SRV=[];
 const SORT={};                          // tableId -> {key,dir}
 let PENDING={};                         // tableId -> скачанный, но не подтверждённый батч
 
 function getPass(){try{return sessionStorage.getItem('kiz_pass')||'';}catch(e){return '';}}
 function setPass(p){try{sessionStorage.setItem('kiz_pass',p);}catch(e){}}
-function loadRegLocal(){try{return new Set(JSON.parse(localStorage.getItem(LS_REG)||'[]'));}catch(e){return new Set();}}
-function saveRegLocal(){try{localStorage.setItem(LS_REG,JSON.stringify([...REG]));}catch(e){}}
+function loadRegLocal(){try{REG_OUT=new Set(JSON.parse(localStorage.getItem(LS_OUT)||'[]'));REG_RET=new Set(JSON.parse(localStorage.getItem(LS_RET)||'[]'));}catch(e){}}
+function saveRegLocal(){try{localStorage.setItem(LS_OUT,JSON.stringify([...REG_OUT]));localStorage.setItem(LS_RET,JSON.stringify([...REG_RET]));}catch(e){}}
 
 /* ═══════════ BOOT ═══════════ */
 function boot(){
   document.getElementById('offBtn').style.display=SERVER?'inline-block':'none';
   if(SERVER){ if(getPass()) loadServer(); else askPassword(); }
-  else { REG=loadRegLocal(); showDrop(); }
+  else { loadRegLocal(); showDrop(); }
 }
 function askPassword(msg){
   const ph=document.getElementById('placeholder'); ph.style.display='block';
@@ -203,7 +203,7 @@ async function loadServer(refresh){
   }
   if(btn)btn.disabled=false;
 }
-async function loadRegistry(){try{const r=await srv('?data=registry');if(r.ok){const j=await r.json();REG=new Set((j.kiz||[]).map(k=>String(k).slice(0,TRIM)));}}catch(e){}}
+async function loadRegistry(){try{const r=await srv('?data=registry');if(r.ok){const j=await r.json();REG_OUT=new Set((j.out||[]).map(k=>String(k).slice(0,TRIM)));REG_RET=new Set((j.ret||[]).map(k=>String(k).slice(0,TRIM)));}}catch(e){}}
 function ingestServer(data){
   COMPANIES=data.companies||[];
   ROWS=(data.rows||[]).map(mapRow);PENDING={};
@@ -254,7 +254,7 @@ function openPaste(){document.getElementById('pasteOv').classList.add('show');se
 function closePaste(){document.getElementById('pasteOv').classList.remove('show');}
 function applyPaste(){const t=document.getElementById('pasteTa').value.trim();if(!t){closePaste();return;}try{ingest(t[0]==='['?parseJSON(t):parseCSV(t),'вставка');closePaste();}catch(err){toast('Не разобрал: '+err.message);}}
 function ingest(raw,src){const rows=normalize(raw);if(!rows.length){toast('Строк не найдено');return;}
-  ROWS=rows;SRC=src;loadedAt=new Date();SERVER_ACTIVE=false;REG=loadRegLocal();DIAG_SRV=[];PENDING={};
+  ROWS=rows;SRC=src;loadedAt=new Date();SERVER_ACTIVE=false;loadRegLocal();DIAG_SRV=[];PENDING={};
   COMPANIES=[...new Set(ROWS.map(r=>r.co))].filter(c=>c&&c!=='—').sort();
   document.getElementById('placeholder').style.display='none';buildFilters(COMPANIES);
   document.getElementById('fbar').style.display='flex';toast(`Загружено ${rows.length} строк · ${src}`);render();renderDiag();}
@@ -274,10 +274,10 @@ const PILL={sold:['s-sold','выкуплен'],canceled_by_client:['s-cancel','�
   declined_by_client:['s-cancel','отказ (1 час)'],sorted:['s-sorted','отсортирован'],ready_for_pickup:['s-ready','готов к выдаче'],
   waiting:['s-wait','ожидает'],delivered:['s-deliv','доставлен'],returned:['s-ret','возврат покупателя'],defect:['s-wait','брак']};
 function pillOf(s){const[c,t]=PILL[s]||['s-other',s||'—'];return `<span class="pill ${c}" title="статус WB: ${s}">${t}</span>`;}
-function exportable(rows){const seen=new Set();return rows.filter(r=>{if(!r.kiz)return false;if(r.price<=0)return false;if(REG.has(r.kiz))return false;if(seen.has(r.kiz))return false;seen.add(r.kiz);return true;});}
-function stateOf(r){return !r.kiz?'нет КИЗ':r.price<=0?'цена 0':REG.has(r.kiz)?'в реестре':'к выгрузке';}
-function stateTag(r){const m={'нет КИЗ':'tagbad','цена 0':'tagbad','в реестре':'tagdone','к выгрузке':'tagnew'};const s=stateOf(r);return `<span class="${m[s]}">${s}</span>`;}
-function stateOrder(r){return {'к выгрузке':0,'в реестре':1,'цена 0':2,'нет КИЗ':3}[stateOf(r)];}
+function exportable(rows,reg){const seen=new Set();return rows.filter(r=>{if(!r.kiz)return false;if(r.price<=0)return false;if(reg.has(r.kiz))return false;if(seen.has(r.kiz))return false;seen.add(r.kiz);return true;});}
+function stateOf(r,reg){return !r.kiz?'нет КИЗ':r.price<=0?'цена 0':reg.has(r.kiz)?'в реестре':'к выгрузке';}
+function stateTag(r,reg){const m={'нет КИЗ':'tagbad','цена 0':'tagbad','в реестре':'tagdone','к выгрузке':'tagnew'};const s=stateOf(r,reg);return `<span class="${m[s]}">${s}</span>`;}
+function stateOrder(r,reg){return {'к выгрузке':0,'в реестре':1,'цена 0':2,'нет КИЗ':3}[stateOf(r,reg)];}
 
 /* ═══════════ SORTABLE TABLE ═══════════ */
 function sortBy(tid,key){const s=SORT[tid]||{key:null,dir:1};if(s.key===key)s.dir=-s.dir;else{s.key=key;s.dir=1;}SORT[tid]=s;render();}
@@ -323,13 +323,14 @@ function renderOver(){
   document.getElementById('page-over').innerHTML=`<div class="mg">${kpis}</div>
     <div class="sec"><div class="sh"><div class="st">Заказы по статусам</div><div class="sm2">фильтр: ${curCoVal()==='ВСЕ'?'все ИП':curCoVal()}</div></div>
     ${tableHTML('over',cols,arr)}</div>
-    <div class="note"><b>Логика.</b> «Вывод из оборота» = отгруженные заказы (<code>sorted</code>, <code>ready_for_pickup</code>). «Возврат в оборот» = отказы клиента (<code>canceled_by_client</code>). Работа в два шага: <b>«Скачать для ЧЗ»</b> — только файл <code>КИЗ ; Цена</code> (31 символ, цена 0 и уже выгруженные исключены), список при этом <b>не тает</b>. После реальной загрузки файла в Честный знак жмёшь <b>«Отметить выгруженными»</b> — вот тогда КИЗ уходят в общий реестр ${SERVER_ACTIVE?'(лист «Выгружено», виден всем)':'(локально)'} и пропадают из списка. Так ничего не потеряется, если файл скачали, но в ЧЗ не залили. Наведи на заголовок — подсказка; клик — сортировка.</div>`;
+    <div class="note"><b>Логика.</b> «Вывод из оборота» = отгруженные заказы (<code>sorted</code>, <code>ready_for_pickup</code>). «Возврат в оборот» = отказы клиента (<code>canceled_by_client</code>). Работа в два шага: <b>«Скачать для ЧЗ»</b> — Excel-файл с двумя столбцами (КИЗ 31 символ и Цена; цена 0 и уже выгруженные исключены), список при этом <b>не тает</b>. После реальной загрузки файла в Честный знак жмёшь <b>«Отметить выгруженными»</b> — вот тогда КИЗ уходят в общий реестр ${SERVER_ACTIVE?'(лист «Выгружено», виден всем)':'(локально)'} и пропадают из списка. Реестры «Выведено» и «Возвращено» <b>раздельные</b> — один КИЗ может пройти оба этапа. Так ничего не потеряется, если файл скачали, но в ЧЗ не залили. Наведи на заголовок — подсказка; клик — сортировка.</div>`;
 }
 
 function renderFlow(tid,pageId,title,statuses,action){
+  const reg=tid==='out'?REG_OUT:REG_RET;
   const rows=filtered(statuses);
-  const exp=exportable(rows);const sumExp=exp.reduce((s,r)=>s+r.price,0);
-  const inReg=rows.filter(r=>r.kiz&&REG.has(r.kiz)).length;
+  const exp=exportable(rows,reg);const sumExp=exp.reduce((s,r)=>s+r.price,0);
+  const inReg=rows.filter(r=>r.kiz&&reg.has(r.kiz)).length;
   const noKiz=rows.filter(r=>!r.kiz).length,zero=rows.filter(r=>r.kiz&&r.price<=0).length;
   const kpis=[kpi('Заказов',fmt(rows.length),'',statuses.join(', ')),kpi('КИЗ к выгрузке',fmt(exp.length),'g',`${fmt(sumExp)} ₽`),
     kpi('Уже в реестре',fmt(inReg),'',inReg?'исключены':'—'),kpi('Проблемные',fmt(noKiz+zero),(noKiz+zero)?'a':'',(noKiz+zero)?`нет КИЗ: ${noKiz} · цена 0: ${zero}`:'—')].join('');
@@ -340,7 +341,7 @@ function renderFlow(tid,pageId,title,statuses,action){
     {key:'art',label:'Артикул',align:'left',tip:'Артикул продавца (article в WB API)'},
     {key:'kiz',label:'КИЗ (31)',align:'left',tip:'Код маркировки Честного знака (sgtin), обрезан до 31 символа — то, что уходит в файл',cell:r=>`<span class="kiz">${r.kiz||'—'}</span>`,sortVal:r=>r.kiz},
     {key:'price',label:'Цена',align:'right',tip:'Цена заказа (finalPrice из WB, копейки → рубли ÷100)',cell:r=>r.price?fmt2(r.price)+' ₽':'<span class="neg">0</span>',sortVal:r=>r.price},
-    {key:'state',label:'Состояние',align:'left',tip:'к выгрузке / в реестре (уже выгружен) / нет КИЗ / цена 0',cell:r=>stateTag(r),sortVal:r=>stateOrder(r)}];
+    {key:'state',label:'Состояние',align:'left',tip:'к выгрузке / в реестре (уже выгружен) / нет КИЗ / цена 0',cell:r=>stateTag(r,reg),sortVal:r=>stateOrder(r,reg)}];
   if(!SORT[tid])SORT[tid]={key:'date',dir:-1};
   const pend=PENDING[tid];
   const pendHTML=pend?`<div class="note" style="border-color:var(--amber);background:var(--hl);margin:0 0 10px">
@@ -358,46 +359,63 @@ function renderFlow(tid,pageId,title,statuses,action){
 }
 
 function renderReg(){
-  const arr=[...REG].map((kiz,i)=>({i:i+1,kiz}));
-  const cols=[{key:'i',label:'№',align:'left',tip:'Порядковый номер в реестре'},
-    {key:'kiz',label:'КИЗ (31 символ)',align:'left',tip:'Выгруженный код маркировки — лист «Выгружено» в Google-таблице (общий для всех)',cell:r=>`<span class="kiz">${r.kiz}</span>`}];
+  const outArr=[...REG_OUT].map((kiz,i)=>({i:i+1,kiz}));
+  const retArr=[...REG_RET].map((kiz,i)=>({i:i+1,kiz}));
+  const cols=tip=>[{key:'i',label:'№',align:'left',tip:'Порядковый номер'},{key:'kiz',label:'КИЗ (31 символ)',align:'left',tip:tip,cell:r=>`<span class="kiz">${r.kiz}</span>`}];
   document.getElementById('page-reg').innerHTML=`<div class="mg">
-    ${kpi('КИЗ в реестре',fmt(arr.length),'g','уже выгружены в ЧЗ')}
+    ${kpi('Выведено из оборота',fmt(outArr.length),'b','лист «Выведено»')}
+    ${kpi('Возвращено в оборот',fmt(retArr.length),'r','лист «Возвращено»')}
     ${kpi('Хранилище',SERVER_ACTIVE?'сервер':'браузер','',SERVER_ACTIVE?'общий · Google-таблица':'localStorage')}
-    ${kpi('Последняя загрузка',loadedAt?loadedAt.toLocaleDateString('ru-RU'):'—','',SRC)}
-    ${kpi('Режим',SERVER_ACTIVE?'команда':'офлайн','',SERVER_ACTIVE?'любое устройство':'этот компьютер')}</div>
-    <div class="sec"><div class="sh"><div class="st">Накопительный реестр выгруженных КИЗ</div>
-      <div style="display:flex;gap:8px"><button class="b" onclick="exportReg()" ${arr.length?'':'disabled'}>↧ Скачать</button><button class="b act" onclick="clearReg()" ${arr.length?'':'disabled'}>Очистить</button></div></div>
-    <div class="note" style="margin:0 0 10px">Сюда попадают все КИЗ, выгруженные кнопкой «Экспорт для Честного знака» (и по выводу, и по возврату). При следующих выгрузках они исключаются — <b>дублей не уйдёт</b>. ${SERVER_ACTIVE?'Реестр общий: лист «Выгружено» в таблице, виден всем сотрудникам.':'Внимание: офлайн-реестр локальный (только этот браузер).'}</div>
-    ${tableHTML('reg',cols,arr)}</div>`;
+    ${kpi('Последняя загрузка',loadedAt?loadedAt.toLocaleDateString('ru-RU'):'—','',SRC)}</div>
+    <div class="note" style="margin:0 0 12px">Реестры <b>раздельные</b>: один КИЗ может быть в обоих (вывели на отгрузке → вернули после отказа). ${SERVER_ACTIVE?'Общие: листы «Выведено»/«Возвращено» в Google-таблице, видны всем.':'Внимание: офлайн — локально в этом браузере.'}</div>
+    <div class="sec"><div class="sh"><div class="st">Выведено из оборота</div>
+      <div style="display:flex;gap:8px"><button class="b" onclick="exportReg('out')" ${outArr.length?'':'disabled'}>↧ Скачать</button><button class="b act" onclick="clearReg('out')" ${outArr.length?'':'disabled'}>Очистить</button></div></div>
+      ${tableHTML('regOut',cols('Выведенный из оборота КИЗ'),outArr)}</div>
+    <div class="sec"><div class="sh"><div class="st">Возвращено в оборот</div>
+      <div style="display:flex;gap:8px"><button class="b" onclick="exportReg('ret')" ${retArr.length?'':'disabled'}>↧ Скачать</button><button class="b act" onclick="clearReg('ret')" ${retArr.length?'':'disabled'}>Очистить</button></div></div>
+      ${tableHTML('regRet',cols('Возвращённый в оборот КИЗ'),retArr)}</div>`;
 }
 
 /* ═══════════ EXPORT ═══════════ */
 function download(name,text){const b=new Blob(['\uFEFF'+text],{type:'text/csv;charset=utf-8'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
 function exportChZ(statusesStr,tid){
-  const statuses=statusesStr.split(',');const exp=exportable(filtered(statuses));
+  const reg=tid==='out'?REG_OUT:REG_RET;
+  const statuses=statusesStr.split(',');const exp=exportable(filtered(statuses),reg);
   if(!exp.length){toast('Нет новых КИЗ к выгрузке');return;}
-  const csv=['КИЗ;Цена',...exp.map(r=>`${r.kiz};${fmt2(r.price)}`)].join('\n');
   const kind=statuses.includes('canceled_by_client')?'возврат':'вывод';
-  download(`ЧЗ_${kind}_${new Date().toISOString().slice(0,10)}.csv`,csv);
+  writeExport(`ЧЗ_${kind}_${new Date().toISOString().slice(0,10)}`,exp);
   PENDING[tid]={kiz:exp.map(r=>r.kiz),n:exp.length,sum:exp.reduce((s,r)=>s+r.price,0)};
   toast(`Скачано ${exp.length} КИЗ. Файл НЕ помечен — подтверди после загрузки в ЧЗ.`);
   render();
 }
+// КИЗ содержит спецсимволы (; , и др.) -> отдаём xlsx, где КИЗ = текст в одной ячейке
+function writeExport(fname,exp){
+  if(typeof XLSX!=='undefined'){
+    const aoa=[['КИЗ','Цена'],...exp.map(r=>[String(r.kiz),r.price])];
+    const ws=XLSX.utils.aoa_to_sheet(aoa);
+    ws['!cols']=[{wch:36},{wch:12}];
+    for(let i=2;i<=aoa.length;i++){const c=ws['A'+i];if(c){c.t='s';c.z='@';}}   // КИЗ строго текст
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'КИЗ');
+    XLSX.writeFile(wb,fname+'.xlsx');
+  }else{  // запасной CSV с кавычками, чтобы ; внутри КИЗ не рвал столбцы
+    const csv=['"КИЗ";"Цена"',...exp.map(r=>`"${String(r.kiz).replace(/"/g,'""')}";${String(r.price).replace('.',',')}`)].join('\n');
+    download(fname+'.csv',csv);
+  }
+}
 async function confirmBatch(tid){
   const b=PENDING[tid]; if(!b) return;
-  const kizList=b.kiz;
-  if(SERVER_ACTIVE){try{const r=await srv('?action=markExported',{method:'POST',body:JSON.stringify({kiz:kizList})});
+  const kizList=b.kiz, kind=tid==='out'?'out':'ret', reg=tid==='out'?REG_OUT:REG_RET;
+  if(SERVER_ACTIVE){try{const r=await srv('?action=markExported',{method:'POST',body:JSON.stringify({kiz:kizList,kind})});
     if(r.ok){await loadRegistry();toast(`Отмечено выгруженными: ${kizList.length}`);}else{toast('Не удалось отметить (HTTP '+r.status+')');return;}}
     catch(e){toast('Ошибка: '+e.message);return;}}
-  else{kizList.forEach(k=>REG.add(k));saveRegLocal();toast(`Отмечено выгруженными: ${kizList.length}`);}
+  else{kizList.forEach(k=>reg.add(k));saveRegLocal();toast(`Отмечено выгруженными: ${kizList.length}`);}
   delete PENDING[tid]; render(); renderDiag();
 }
 function cancelBatch(tid){delete PENDING[tid];toast('Батч сброшен, ничего не отмечено');render();}
-function exportReg(){download(`реестр_КИЗ_${new Date().toISOString().slice(0,10)}.csv`,['КИЗ',...REG].join('\n'));}
-async function clearReg(){if(!confirm('Очистить реестр выгруженных КИЗ? Отменить нельзя.'))return;
-  if(SERVER_ACTIVE){try{const r=await srv('?action=clearRegistry',{method:'POST'});if(r.ok){REG=new Set();toast('Реестр очищен (сервер)');}}catch(e){toast('Ошибка: '+e.message);}}
-  else{REG=new Set();saveRegLocal();toast('Реестр очищен');}
+function exportReg(kind){const reg=kind==='ret'?REG_RET:REG_OUT;const nm=kind==='ret'?'возвращено':'выведено';download(`реестр_${nm}_${new Date().toISOString().slice(0,10)}.csv`,['КИЗ',...reg].join('\n'));}
+async function clearReg(kind){const nm=kind==='ret'?'«Возвращено»':'«Выведено»';if(!confirm('Очистить реестр '+nm+'? Отменить нельзя.'))return;
+  if(SERVER_ACTIVE){try{const r=await srv('?action=clearRegistry',{method:'POST',body:JSON.stringify({kind})});if(r.ok){if(kind==='ret')REG_RET=new Set();else REG_OUT=new Set();toast('Реестр очищен (сервер)');}}catch(e){toast('Ошибка: '+e.message);}}
+  else{if(kind==='ret')REG_RET=new Set();else REG_OUT=new Set();saveRegLocal();toast('Реестр очищен');}
   render();renderDiag();}
 
 /* ═══════════ DIAGNOSTICS ═══════════ */
@@ -420,7 +438,8 @@ function renderDiag(){let d=document.getElementById('diagPanel');
     ${line(noKiz?'warn':'ok','Без КИЗ (в действиях)',noKiz,noKiz?'не попадут в выгрузку':'')}
     ${line(zero?'warn':'ok','Цена 0 (в действиях)',zero,zero?'исключены':'')}
     ${line(dup?'warn':'ok','Дубли КИЗ',dup,dup?'берётся один раз':'')}
-    ${line('ok','В реестре',REG.size,SERVER_ACTIVE?'общий (таблица)':'локальный')}
+    ${line('ok','Реестр «Выведено»',REG_OUT.size,SERVER_ACTIVE?'общий':'локальный')}
+    ${line('ok','Реестр «Возвращено»',REG_RET.size,SERVER_ACTIVE?'общий':'локальный')}
     ${srvLines}</table>`;
 }
 
