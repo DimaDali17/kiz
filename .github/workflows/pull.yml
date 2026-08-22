@@ -1,0 +1,27 @@
+name: Сбор заказов WB → Google-таблица
+
+on:
+  schedule:
+    - cron: '0 5,17 * * *'   # 05:00 и 17:00 UTC (≈ дважды в сутки). Поменяй под себя.
+  workflow_dispatch:          # кнопка «Run workflow» для ручного запуска
+
+concurrency:
+  group: wb-pull
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Собрать заказы и записать в таблицу
+        run: node pull.mjs
+        env:
+          WB_TOKENS: ${{ secrets.WB_TOKENS }}
+          APPSCRIPT_URL: ${{ secrets.APPSCRIPT_URL }}
+          APPSCRIPT_TOKEN: ${{ secrets.APPSCRIPT_TOKEN }}
+          DAYS: '90'
+          PRICE_DIVISOR: '100'
