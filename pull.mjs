@@ -58,7 +58,8 @@ function mapOrder(o) {
     createdAt: o.createdAt || '',
     article: o.article || '',
     nmId: o.nmId || '',
-    price: (o.finalPrice != null ? o.finalPrice : (o.price != null ? o.price : 0)),
+    // convertedPrice = цена в валюте продавца (рубли). price = валюта покупателя (даёт аномалии по СНГ)
+    price: (o.convertedPrice != null ? o.convertedPrice : (o.finalPrice != null ? o.finalPrice : (o.price != null ? o.price : 0))),
     supplyId: o.supplyId || '',                    // WB-GI-... для сверки с кабинетом
     wbStatus: o.wbStatus || o.status || '',
     sgtin: extractSgtin(o),
