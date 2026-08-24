@@ -143,6 +143,15 @@ td span.v{position:relative;z-index:1}
   </div>
 </div>
 
+<div class="ov" id="clearOv">
+  <div class="oc" style="max-width:470px">
+    <h3 style="color:var(--red)">⚠ Очистить реестр?</h3>
+    <p style="line-height:1.6">Это <b>безвозвратно</b> сотрёт всю накопленную историю выгрузок из реестра <b id="clearName"></b>. После очистки КИЗы, попадающие в 90-дневное окно, можно будет <b>выгрузить в Честный знак повторно</b> — а значит возможны дубли и ошибки в ЧЗ.<br><br>В обычной работе реестр очищать <b>не нужно никогда</b>. Делать это можно <b>только в исключительных случаях</b> и только по решению руководителя или разработчика (например, полная переинициализация системы).</p>
+    <label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;margin:8px 0 2px;cursor:pointer;color:var(--ink2)"><input type="checkbox" id="clearAck" onchange="document.getElementById('clearGo').disabled=!this.checked" style="margin-top:2px"> Я понимаю последствия и беру ответственность за очистку</label>
+    <div class="row"><button class="b pri" onclick="closeClear()">Отмена (рекомендуется)</button><button class="b" id="clearGo" style="border-color:var(--red);color:var(--red)" disabled onclick="doClear()">Всё равно очистить</button></div>
+  </div>
+</div>
+
 <input type="file" id="fileInp" accept=".csv,.tsv,.txt,.json,.xlsx" style="display:none" onchange="onFile(event)">
 <div class="toast" id="toast"></div>
 
@@ -150,7 +159,7 @@ td span.v{position:relative;z-index:1}
 <script>
 /* ═══════════ КОНФИГ ═══════════ */
 const WORKER = 'https://kiz.ooo6311ooo.workers.dev';   /* твой адрес воркера; пусто = офлайн-режим */
-const VERSION='2026-08-24b · даты дд.мм.гггг';  /* метка сборки — видна в диагностике */
+const VERSION='2026-08-24c · защита очистки';  /* метка сборки — видна в диагностике */
 
 /* ═══════════ STATE ═══════════ */
 const LS_OUT='kiz_reg_out_v1', LS_RET='kiz_reg_ret_v1', TRIM=31;
@@ -425,7 +434,10 @@ async function confirmBatch(tid){
 }
 function cancelBatch(tid){delete PENDING[tid];toast('Батч сброшен, ничего не отмечено');render();}
 function exportReg(kind){const reg=kind==='ret'?REG_RET:REG_OUT;const nm=kind==='ret'?'возвращено':'выведено';download(`реестр_${nm}_${new Date().toISOString().slice(0,10)}.csv`,['КИЗ',...reg].join('\n'));}
-async function clearReg(kind){const nm=kind==='ret'?'«Возвращено»':'«Выведено»';if(!confirm('Очистить реестр '+nm+'? Отменить нельзя.'))return;
+let CLEAR_KIND=null;
+function clearReg(kind){CLEAR_KIND=kind;document.getElementById('clearName').textContent=kind==='ret'?'«Возвращено»':'«Выведено»';const a=document.getElementById('clearAck');a.checked=false;document.getElementById('clearGo').disabled=true;document.getElementById('clearOv').classList.add('show');}
+function closeClear(){document.getElementById('clearOv').classList.remove('show');}
+async function doClear(){const kind=CLEAR_KIND;closeClear();
   if(SERVER_ACTIVE){try{const r=await srv('?action=clearRegistry',{method:'POST',body:JSON.stringify({kind})});if(r.ok){if(kind==='ret')REG_RET=new Set();else REG_OUT=new Set();toast('Реестр очищен (сервер)');}}catch(e){toast('Ошибка: '+e.message);}}
   else{if(kind==='ret')REG_RET=new Set();else REG_OUT=new Set();saveRegLocal();toast('Реестр очищен');}
   render();renderDiag();}
