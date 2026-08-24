@@ -150,7 +150,7 @@ td span.v{position:relative;z-index:1}
 <script>
 /* ═══════════ КОНФИГ ═══════════ */
 const WORKER = 'https://kiz.ooo6311ooo.workers.dev';   /* твой адрес воркера; пусто = офлайн-режим */
-const VERSION='2026-08-24 · простыня в Обзоре';  /* метка сборки — видна в диагностике */
+const VERSION='2026-08-24b · даты дд.мм.гггг';  /* метка сборки — видна в диагностике */
 
 /* ═══════════ STATE ═══════════ */
 const LS_OUT='kiz_reg_out_v1', LS_RET='kiz_reg_ret_v1', TRIM=31;
@@ -270,6 +270,7 @@ function filtered(statuses){const co=curCoVal();const q=document.getElementById(
 
 /* ═══════════ HELPERS ═══════════ */
 function fmt(n){return Math.round(n).toLocaleString('ru-RU');}
+function fmtDate(d){const m=String(d||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[3]}.${m[2]}.${m[1]}`:(d?String(d).slice(0,10):'—');}
 function fmt2(n){return n.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});}
 const PILL={sold:['s-sold','выкуплен'],canceled_by_client:['s-cancel','отказ клиента'],canceled:['s-cancel','отменён'],
   declined_by_client:['s-cancel','отказ (1 час)'],sorted:['s-sorted','отсортирован'],ready_for_pickup:['s-ready','готов к выдаче'],
@@ -322,7 +323,7 @@ function renderOver(){
     {key:'sum',label:'Сумма',align:'right',tip:'Сумма цен заказов (finalPrice из WB), рубли',cell:r=>fmt(r.sum)+' ₽'}];
   if(!SORT['over'])SORT['over']={key:'n',dir:-1};
   const allCols=[
-    {key:'date',label:'Дата',align:'left',tip:'Дата создания заказа (createdAt в WB API)'},
+    {key:'date',label:'Дата',align:'left',tip:'Дата создания заказа (createdAt в WB API)',cell:r=>fmtDate(r.date),sortVal:r=>r.date},
     {key:'co',label:'ИП',align:'left',tip:'Кабинет-продавец (какой токен WB отдал заказ)'},
     {key:'status',label:'Статус',align:'left',tip:'wbStatus из WB API',cell:r=>pillOf(r.status),sortVal:r=>r.status},
     {key:'art',label:'Артикул',align:'left',tip:'Артикул продавца (article в WB API)'},
@@ -346,7 +347,7 @@ function renderFlow(tid,pageId,title,statuses,action){
   const kpis=[kpi('Заказов',fmt(rows.length),'',statuses.join(', ')),kpi('КИЗ к выгрузке',fmt(exp.length),'g',`${fmt(sumExp)} ₽`),
     kpi('Уже в реестре',fmt(inReg),'',inReg?'исключены':'—'),kpi('Проблемные',fmt(noKiz+zero),(noKiz+zero)?'a':'',(noKiz+zero)?`нет КИЗ: ${noKiz} · цена 0: ${zero}`:'—')].join('');
   const cols=[
-    {key:'date',label:'Дата',align:'left',tip:'Дата создания заказа (createdAt в WB API)'},
+    {key:'date',label:'Дата',align:'left',tip:'Дата создания заказа (createdAt в WB API)',cell:r=>fmtDate(r.date),sortVal:r=>r.date},
     {key:'co',label:'ИП',align:'left',tip:'Кабинет-продавец (какой токен WB отдал заказ)'},
     {key:'status',label:'Статус',align:'left',tip:'wbStatus из WB API',cell:r=>pillOf(r.status),sortVal:r=>r.status},
     {key:'art',label:'Артикул',align:'left',tip:'Артикул продавца (article в WB API)'},
