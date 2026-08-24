@@ -150,6 +150,7 @@ td span.v{position:relative;z-index:1}
 <script>
 /* ═══════════ КОНФИГ ═══════════ */
 const WORKER = 'https://kiz.ooo6311ooo.workers.dev';   /* твой адрес воркера; пусто = офлайн-режим */
+const VERSION='2026-08-24 · простыня в Обзоре';  /* метка сборки — видна в диагностике */
 
 /* ═══════════ STATE ═══════════ */
 const LS_OUT='kiz_reg_out_v1', LS_RET='kiz_reg_ret_v1', TRIM=31;
@@ -320,10 +321,20 @@ function renderOver(){
     {key:'n',label:'Заказов',align:'right',tip:'Число заказов с этим статусом (после фильтра ИП/поиск)',cell:r=>`<span class="bar bl" style="width:${r.n/maxN*100}%"></span><span class="v">${fmt(r.n)}</span>`},
     {key:'sum',label:'Сумма',align:'right',tip:'Сумма цен заказов (finalPrice из WB), рубли',cell:r=>fmt(r.sum)+' ₽'}];
   if(!SORT['over'])SORT['over']={key:'n',dir:-1};
+  const allCols=[
+    {key:'date',label:'Дата',align:'left',tip:'Дата создания заказа (createdAt в WB API)'},
+    {key:'co',label:'ИП',align:'left',tip:'Кабинет-продавец (какой токен WB отдал заказ)'},
+    {key:'status',label:'Статус',align:'left',tip:'wbStatus из WB API',cell:r=>pillOf(r.status),sortVal:r=>r.status},
+    {key:'art',label:'Артикул',align:'left',tip:'Артикул продавца (article в WB API)'},
+    {key:'kiz',label:'КИЗ (31)',align:'left',tip:'Код маркировки Честного знака (sgtin), 31 символ',cell:r=>`<span class="kiz">${r.kiz||'—'}</span>`,sortVal:r=>r.kiz},
+    {key:'price',label:'Цена',align:'right',tip:'Цена заказа (finalPrice из WB), рубли',cell:r=>r.price?fmt2(r.price)+' ₽':'<span class="neg">0</span>',sortVal:r=>r.price}];
+  if(!SORT['all'])SORT['all']={key:'date',dir:-1};
   document.getElementById('page-over').innerHTML=`<div class="mg">${kpis}</div>
     <div class="sec"><div class="sh"><div class="st">Заказы по статусам</div><div class="sm2">фильтр: ${curCoVal()==='ВСЕ'?'все ИП':curCoVal()}</div></div>
     ${tableHTML('over',cols,arr)}</div>
-    <div class="note"><b>Логика.</b> «Вывод из оборота» = отгруженные заказы (<code>sorted</code>, <code>ready_for_pickup</code>). «Возврат в оборот» = отказы клиента (<code>canceled_by_client</code>). Работа в два шага: <b>«Скачать для ЧЗ»</b> — Excel-файл с двумя столбцами (КИЗ 31 символ и Цена; цена 0 и уже выгруженные исключены), список при этом <b>не тает</b>. После реальной загрузки файла в Честный знак жмёшь <b>«Отметить выгруженными»</b> — вот тогда КИЗ уходят в общий реестр ${SERVER_ACTIVE?'(лист «Выгружено», виден всем)':'(локально)'} и пропадают из списка. Реестры «Выведено» и «Возвращено» <b>раздельные</b> — один КИЗ может пройти оба этапа. Так ничего не потеряется, если файл скачали, но в ЧЗ не залили. Наведи на заголовок — подсказка; клик — сортировка.</div>`;
+    <div class="note"><b>Логика.</b> «Вывод из оборота» = отгруженные заказы (<code>sorted</code>, <code>ready_for_pickup</code>). «Возврат в оборот» = отказы клиента (<code>canceled_by_client</code>). Работа в два шага: <b>«Скачать для ЧЗ»</b> — Excel-файл с двумя столбцами (КИЗ 31 символ и Цена; цена 0 и уже выгруженные исключены), список при этом <b>не тает</b>. После реальной загрузки файла в Честный знак жмёшь <b>«Отметить выгруженными»</b> — вот тогда КИЗ уходят в общий реестр ${SERVER_ACTIVE?'(лист «Выгружено», виден всем)':'(локально)'} и пропадают из списка. Реестры «Выведено» и «Возвращено» <b>раздельные</b> — один КИЗ может пройти оба этапа. Так ничего не потеряется, если файл скачали, но в ЧЗ не залили. Наведи на заголовок — подсказка; клик — сортировка.</div>
+    <div class="sec"><div class="sh"><div class="st">Все заказы</div><div class="sm2">${all.length} строк · клик по заголовку — сортировка, поиск и ИП — сверху</div></div>
+    ${tableHTML('all',allCols,all)}</div>`;
 }
 
 function renderFlow(tid,pageId,title,statuses,action){
@@ -430,7 +441,7 @@ function renderDiag(){let d=document.getElementById('diagPanel');
   const kizAll=ROWS.filter(r=>r.kiz).map(r=>r.kiz);const dup=kizAll.length-new Set(kizAll).size;
   const line=(st,name,val,msg)=>`<tr><td><span class="dot ${st}"></span>${name}</td><td>${val}</td><td style="color:var(--ink3)">${msg||''}</td></tr>`;
   const srvLines=DIAG_SRV.map(x=>line(x.status||'ok',(x.co?x.co+' · ':'')+x.name,x.rows,x.msg||'')).join('');
-  d.innerHTML=`<b>Диагностика</b> <span style="color:var(--ink3)">· ${loadedAt?loadedAt.toLocaleString('ru-RU'):'—'} · ${SRC} · режим: ${SERVER_ACTIVE?'сервер':'офлайн'}</span>
+  d.innerHTML=`<b>Диагностика</b> <span style="color:var(--ink3)">· ${loadedAt?loadedAt.toLocaleString('ru-RU'):'—'} · ${SRC} · режим: ${SERVER_ACTIVE?'сервер':'офлайн'} · сборка: ${VERSION}</span>
     <table style="margin-top:6px">
     ${line('ok','Всего строк',ROWS.length,'все статусы')}
     ${line('ok','Вывод (sold)',out.length,'')}
