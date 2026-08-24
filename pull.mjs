@@ -59,30 +59,19 @@ function mapOrder(o) {
     article: o.article || '',
     nmId: o.nmId || '',
     price: (o.finalPrice != null ? o.finalPrice : (o.price != null ? o.price : 0)),
-    wbStatus: o.wbStatus || o.status || '',      // если архив отдаёт статус инлайн
-    sgtin: extractSgtin(o),                        // если архив отдаёт КИЗ инлайн
+    supplyId: o.supplyId || '',                    // WB-GI-... для сверки с кабинетом
+    wbStatus: o.wbStatus || o.status || '',
+    sgtin: extractSgtin(o),
   };
 }
 function extractSgtin(it) {
-  const raw = it.sgtin ?? it.sgtins ?? (it.meta && it.meta.sgtin) ?? [];
+  let raw = null;
+  if (it && it.meta && it.meta.sgtin != null)
+    raw = (it.meta.sgtin && it.meta.sgtin.value != null) ? it.meta.sgtin.value : it.meta.sgtin;
+  else if (it && it.sgtin != null) raw = it.sgtin;
+  else if (it && it.sgtins != null) raw = it.sgtins;
   const arr = Array.isArray(raw) ? raw : (raw ? [raw] : []);
-  return arr.map(x => (typeof x === 'string' ? x : (x.code || x.sgtin || x.value || ''))).filter(Boolean);
-}
-
-// АРХИВ: пагинация по next
-async function getArchive(token) {
-  const out = []; let next = 0, first = true;
-  for (let g = 0; g < 400; g++) {
-    let j;
-    try { j = await wb(token, 'GET', `/api/marketplace/v3/fbs/orders/archive?limit=1000&next=${next}`); }
-    catch (e) { console.log('  архив: ошибка', e.message); break; }
-    const arr = j.orders || [];
-    if (first) { console.log('  DEBUG архив, первый заказ:', JSON.stringify(arr[0] || {}).slice(0, 500)); first = false; }
-    for (const o of arr) out.push(mapOrder(o));
-    next = j.next || 0;
-    if (arr.length < 1000 || !next) break;
-  }
-  return out;
+  return arr.map(x => (typeof x === 'string' ? x : (x && (x.code || x.sgtin || x.value)) || '')).filter(Boolean);
 }
 
 // АКТИВНЫЕ: окнами по 30 дней (лимит метода)
@@ -102,6 +91,21 @@ async function getActive(token) {
     }
   }
   return out;
+}
+
+// ПОСТАВКИ: supplyId -> дата создания поставки (для сверки с кабинетом)
+async function getSupplies(token) {
+  const map = new Map(); let next = 0;
+  for (let g = 0; g < 100; g++) {
+    let j;
+    try { j = await wb(token, 'GET', `/api/v3/supplies?limit=1000&next=${next}`); }
+    catch (e) { console.log('  поставки: ошибка', e.message); break; }
+    const arr = j.supplies || [];
+    for (const sup of arr) map.set(sup.id, sup.createdAt || sup.closedAt || '');
+    next = j.next || 0;
+    if (arr.length < 1000 || !next) break;
+  }
+  return map;
 }
 
 async function getStatuses(token, ids) {
@@ -138,23 +142,12 @@ async function getMeta(token, ids) {
 
 async function collect(t) {
   console.log(`ИП ${t.name}:`);
-  const arch = await getArchive(t.token);
   const act = await getActive(t.token);
-  console.log(`  архив: ${arch.length}, активные: ${act.length}`);
+  const supplyMap = await getSupplies(t.token);
+  console.log(`  заказов: ${act.length}, поставок: ${supplyMap.size}`);
 
-  // слияние по id (заполняем недостающие поля)
   const byId = new Map();
-  for (const o of [...arch, ...act]) {
-    const cur = byId.get(o.id);
-    if (!cur) byId.set(o.id, o);
-    else {
-      cur.createdAt = cur.createdAt || o.createdAt;
-      cur.article = cur.article || o.article;
-      if (!cur.price) cur.price = o.price;
-      cur.wbStatus = cur.wbStatus || o.wbStatus;
-      if (!cur.sgtin.length) cur.sgtin = o.sgtin;
-    }
-  }
+  for (const o of act) if (!byId.has(o.id)) byId.set(o.id, o);
   const ids = [...byId.keys()];
 
   // актуальный статус (авторитетно) — для тех, у кого нет инлайн-статуса
@@ -181,7 +174,7 @@ async function collect(t) {
   for (const id of keepIds) {
     const o = byId.get(id);
     const price = round2((o.price || 0) / PRICE_DIVISOR);
-    const base = { date: (o.createdAt || '').slice(0, 10), id, co: t.name, status: o.wbStatus, article: o.article };
+    const base = { date: (o.createdAt || '').slice(0, 10), id, co: t.name, status: o.wbStatus, article: o.article, supplyId: o.supplyId || '', supplyDate: (supplyMap.get(o.supplyId) || '').slice(0, 10) };
     if (!o.sgtin.length) { rows.push({ ...base, kiz: '', price }); noKiz++; }
     else for (const k of o.sgtin) rows.push({ ...base, kiz: String(k).slice(0, 31), price });
   }

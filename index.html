@@ -159,7 +159,7 @@ td span.v{position:relative;z-index:1}
 <script>
 /* ═══════════ КОНФИГ ═══════════ */
 const WORKER = 'https://kiz.ooo6311ooo.workers.dev';   /* твой адрес воркера; пусто = офлайн-режим */
-const VERSION='2026-08-24c · защита очистки';  /* метка сборки — видна в диагностике */
+const VERSION='2026-08-24d · поставки (supplyId + дата)';  /* метка сборки — видна в диагностике */
 
 /* ═══════════ STATE ═══════════ */
 const LS_OUT='kiz_reg_out_v1', LS_RET='kiz_reg_ret_v1', TRIM=31;
@@ -251,7 +251,7 @@ function parseJSON(t){const a=JSON.parse(t);if(!Array.isArray(a))throw new Error
 /* ═══════════ NORMALIZE ═══════════ */
 function coercePrice(v){if(v==null||v==='')return 0;let s=String(v).replace(/\s/g,'').replace(/₽|руб\.?/gi,'').replace(',','.');const n=parseFloat(s);return isFinite(n)?n:0;}
 function parseDate(v){if(!v)return null;const s=String(v).trim();let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m)return {y:+m[1],mo:+m[2]};m=s.match(/^(\d{2})\.(\d{2})\.(\d{4})/);if(m)return {y:+m[3],mo:+m[2]};const d=new Date(s);if(!isNaN(d))return {y:d.getFullYear(),mo:d.getMonth()+1};return null;}
-function mapRow(r){const kizRaw=String(r.kiz||'').trim();const dt=parseDate(r.date);const dstr=String(r.date||'').slice(0,10);return {date:dstr,y:dt?dt.y:0,mo:dt?dt.mo:0,id:String(r.id||'').trim(),co:String(r.co||'—').trim()||'—',status:String(r.status||'').trim(),art:String(r.art||r.article||'').trim(),kizFull:kizRaw,kiz:kizRaw.slice(0,TRIM),price:coercePrice(r.price)};}
+function mapRow(r){const kizRaw=String(r.kiz||'').trim();const dt=parseDate(r.date);const dstr=String(r.date||'').slice(0,10);return {date:dstr,y:dt?dt.y:0,mo:dt?dt.mo:0,id:String(r.id||'').trim(),co:String(r.co||'—').trim()||'—',status:String(r.status||'').trim(),art:String(r.art||r.article||'').trim(),supplyId:String(r.supplyId||'').trim(),supplyDate:String(r.supplyDate||'').slice(0,10),kizFull:kizRaw,kiz:kizRaw.slice(0,TRIM),price:coercePrice(r.price)};}
 function normalize(raw){return raw.map(mapRow);}
 
 /* ═══════════ FILE / PASTE ═══════════ */
@@ -275,7 +275,7 @@ function buildFilters(cos){const list=['ВСЕ',...(cos||[]).filter(Boolean)];
   document.getElementById('fCo').innerHTML=list.map(c=>`<option value="${c}">${c==='ВСЕ'?'Все ИП':c}</option>`).join('');}
 function curCoVal(){return document.getElementById('fCo').value;}
 function filtered(statuses){const co=curCoVal();const q=document.getElementById('fSearch').value.trim().toLowerCase();
-  return ROWS.filter(r=>{if(statuses&&!statuses.includes(r.status))return false;if(co!=='ВСЕ'&&r.co!==co)return false;if(q&&!(r.art.toLowerCase().includes(q)||r.kizFull.toLowerCase().includes(q)))return false;return true;});}
+  return ROWS.filter(r=>{if(statuses&&!statuses.includes(r.status))return false;if(co!=='ВСЕ'&&r.co!==co)return false;if(q&&!(r.art.toLowerCase().includes(q)||r.kizFull.toLowerCase().includes(q)||r.supplyId.toLowerCase().includes(q)))return false;return true;});}
 
 /* ═══════════ HELPERS ═══════════ */
 function fmt(n){return Math.round(n).toLocaleString('ru-RU');}
@@ -336,6 +336,8 @@ function renderOver(){
     {key:'co',label:'ИП',align:'left',tip:'Кабинет-продавец (какой токен WB отдал заказ)'},
     {key:'status',label:'Статус',align:'left',tip:'wbStatus из WB API',cell:r=>pillOf(r.status),sortVal:r=>r.status},
     {key:'art',label:'Артикул',align:'left',tip:'Артикул продавца (article в WB API)'},
+    {key:'supplyDate',label:'Пост.',align:'left',tip:'Дата поставки (когда короб отгрузили) — createdAt поставки в WB',cell:r=>fmtDate(r.supplyDate),sortVal:r=>r.supplyDate},
+    {key:'supplyId',label:'Поставка №',align:'left',tip:'Номер поставки WB-GI-… — для сверки с кабинетом WB (можно искать в поиске)',cell:r=>r.supplyId||'—'},
     {key:'kiz',label:'КИЗ (31)',align:'left',tip:'Код маркировки Честного знака (sgtin), 31 символ',cell:r=>`<span class="kiz">${r.kiz||'—'}</span>`,sortVal:r=>r.kiz},
     {key:'price',label:'Цена',align:'right',tip:'Цена заказа (finalPrice из WB), рубли',cell:r=>r.price?fmt2(r.price)+' ₽':'<span class="neg">0</span>',sortVal:r=>r.price}];
   if(!SORT['all'])SORT['all']={key:'date',dir:-1};
@@ -360,6 +362,8 @@ function renderFlow(tid,pageId,title,statuses,action){
     {key:'co',label:'ИП',align:'left',tip:'Кабинет-продавец (какой токен WB отдал заказ)'},
     {key:'status',label:'Статус',align:'left',tip:'wbStatus из WB API',cell:r=>pillOf(r.status),sortVal:r=>r.status},
     {key:'art',label:'Артикул',align:'left',tip:'Артикул продавца (article в WB API)'},
+    {key:'supplyDate',label:'Пост.',align:'left',tip:'Дата поставки (когда короб отгрузили) — createdAt поставки в WB',cell:r=>fmtDate(r.supplyDate),sortVal:r=>r.supplyDate},
+    {key:'supplyId',label:'Поставка №',align:'left',tip:'Номер поставки WB-GI-… — для сверки с кабинетом WB (можно искать в поиске)',cell:r=>r.supplyId||'—'},
     {key:'kiz',label:'КИЗ (31)',align:'left',tip:'Код маркировки Честного знака (sgtin), обрезан до 31 символа — то, что уходит в файл',cell:r=>`<span class="kiz">${r.kiz||'—'}</span>`,sortVal:r=>r.kiz},
     {key:'price',label:'Цена',align:'right',tip:'Цена заказа (finalPrice из WB, копейки → рубли ÷100)',cell:r=>r.price?fmt2(r.price)+' ₽':'<span class="neg">0</span>',sortVal:r=>r.price},
     {key:'state',label:'Состояние',align:'left',tip:'к выгрузке / в реестре (уже выгружен) / нет КИЗ / цена 0',cell:r=>stateTag(r,reg),sortVal:r=>stateOrder(r,reg)}];
