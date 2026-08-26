@@ -352,6 +352,7 @@ function renderOver(){
 function renderFlow(tid,pageId,title,statuses,action){
   const reg=tid==='out'?REG_OUT:REG_RET;
   const rows=filtered(statuses);
+  const visible=rows.filter(r=>!(r.kiz&&reg.has(r.kiz)));
   const exp=exportable(rows,reg);const sumExp=exp.reduce((s,r)=>s+r.price,0);
   const inReg=rows.filter(r=>r.kiz&&reg.has(r.kiz)).length;
   const noKiz=rows.filter(r=>!r.kiz).length,zero=rows.filter(r=>r.kiz&&r.price<=0).length;
@@ -380,7 +381,7 @@ function renderFlow(tid,pageId,title,statuses,action){
       <button class="b gr" onclick="exportChZ('${statuses.join(',')}','${tid}')" ${exp.length?'':'disabled'}>↧ Скачать для ЧЗ</button></div></div>
     ${pendHTML}
     <div class="sm2" style="margin:-4px 0 8px">Строки — ${action}. Наведи на заголовок для пояснения, клик — сортировка.</div>
-    ${tableHTML(tid,cols,rows)}</div>`;
+    ${tableHTML(tid,cols,visible)}</div>`;
 }
 
 function renderReg(){
@@ -408,22 +409,28 @@ function exportChZ(statusesStr,tid){
   const statuses=statusesStr.split(',');const exp=exportable(filtered(statuses),reg);
   if(!exp.length){toast('Нет новых КИЗ к выгрузке');return;}
   const kind=statuses.includes('canceled_by_client')?'возврат':'вывод';
-  writeExport(`ЧЗ_${kind}_${new Date().toISOString().slice(0,10)}`,exp);
+  writeExport(`ЧЗ_${kind}_${new Date().toISOString().slice(0,10)}`,exp,tid==='ret');
   PENDING[tid]={kiz:exp.map(r=>r.kiz),n:exp.length,sum:exp.reduce((s,r)=>s+r.price,0)};
   toast(`Скачано ${exp.length} КИЗ. Файл НЕ помечен — подтверди после загрузки в ЧЗ.`);
   render();
 }
 // КИЗ содержит спецсимволы (; , и др.) -> отдаём xlsx, где КИЗ = текст в одной ячейке
-function writeExport(fname,exp){
+// kizOnly=true (возврат в оборот): один столбец КИЗ, без заголовка и без цены — по шаблону ЧЗ
+function writeExport(fname,exp,kizOnly){
   if(typeof XLSX!=='undefined'){
-    const aoa=[['КИЗ','Цена'],...exp.map(r=>[String(r.kiz),r.price])];
+    const aoa=kizOnly
+      ? exp.map(r=>[String(r.kiz)])
+      : [['КИЗ','Цена'],...exp.map(r=>[String(r.kiz),r.price])];
     const ws=XLSX.utils.aoa_to_sheet(aoa);
-    ws['!cols']=[{wch:36},{wch:12}];
-    for(let i=2;i<=aoa.length;i++){const c=ws['A'+i];if(c){c.t='s';c.z='@';}}   // КИЗ строго текст
+    ws['!cols']=kizOnly?[{wch:36}]:[{wch:36},{wch:12}];
+    const from=kizOnly?1:2;                                                  // строка, с которой начинается КИЗ
+    for(let i=from;i<=aoa.length;i++){const c=ws['A'+i];if(c){c.t='s';c.z='@';}}   // КИЗ строго текст
     const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'КИЗ');
     XLSX.writeFile(wb,fname+'.xlsx');
   }else{  // запасной CSV с кавычками, чтобы ; внутри КИЗ не рвал столбцы
-    const csv=['"КИЗ";"Цена"',...exp.map(r=>`"${String(r.kiz).replace(/"/g,'""')}";${String(r.price).replace('.',',')}`)].join('\n');
+    const csv=kizOnly
+      ? exp.map(r=>`"${String(r.kiz).replace(/"/g,'""')}"`).join('\n')
+      : ['"КИЗ";"Цена"',...exp.map(r=>`"${String(r.kiz).replace(/"/g,'""')}";${String(r.price).replace('.',',')}`)].join('\n');
     download(fname+'.csv',csv);
   }
 }
