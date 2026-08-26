@@ -159,7 +159,7 @@ td span.v{position:relative;z-index:1}
 <script>
 /* ═══════════ КОНФИГ ═══════════ */
 const WORKER = 'https://kiz.ooo6311ooo.workers.dev';   /* твой адрес воркера; пусто = офлайн-режим */
-const VERSION='2026-08-24d · поставки (supplyId + дата)';  /* метка сборки — видна в диагностике */
+const VERSION='2026-08-26a · возврат: 1 столбец без шапки + защита реестра от дублей';  /* метка сборки — видна в диагностике */
 
 /* ═══════════ STATE ═══════════ */
 const LS_OUT='kiz_reg_out_v1', LS_RET='kiz_reg_ret_v1', TRIM=31;
@@ -167,13 +167,13 @@ const OUT_ST=['sorted','ready_for_pickup']; // ВЫВОД из оборота = 
 const RET_ST=['canceled_by_client'];   // ВОЗВРАТ в оборот = отказ клиента
 const ACTION_ST=[...OUT_ST,...RET_ST];
 let ROWS=[], curTab='over', SERVER=!!WORKER, SERVER_ACTIVE=!!WORKER, REG_OUT=new Set(), REG_RET=new Set(), COMPANIES=[];
-let SRC='—', loadedAt=null, DIAG_SRV=[];
+let SRC='—', loadedAt=null, DIAG_SRV=[], REG_LOADED=false;
 const SORT={};                          // tableId -> {key,dir}
 let PENDING={};                         // tableId -> скачанный, но не подтверждённый батч
 
 function getPass(){try{return sessionStorage.getItem('kiz_pass')||'';}catch(e){return '';}}
 function setPass(p){try{sessionStorage.setItem('kiz_pass',p);}catch(e){}}
-function loadRegLocal(){try{REG_OUT=new Set(JSON.parse(localStorage.getItem(LS_OUT)||'[]'));REG_RET=new Set(JSON.parse(localStorage.getItem(LS_RET)||'[]'));}catch(e){}}
+function loadRegLocal(){try{REG_OUT=new Set(JSON.parse(localStorage.getItem(LS_OUT)||'[]'));REG_RET=new Set(JSON.parse(localStorage.getItem(LS_RET)||'[]'));}catch(e){}REG_LOADED=true;}
 function saveRegLocal(){try{localStorage.setItem(LS_OUT,JSON.stringify([...REG_OUT]));localStorage.setItem(LS_RET,JSON.stringify([...REG_RET]));}catch(e){}}
 
 /* ═══════════ BOOT ═══════════ */
@@ -213,7 +213,16 @@ async function loadServer(refresh){
   }
   if(btn)btn.disabled=false;
 }
-async function loadRegistry(){try{const r=await srv('?data=registry');if(r.ok){const j=await r.json();REG_OUT=new Set((j.out||[]).map(k=>String(k).slice(0,TRIM)));REG_RET=new Set((j.ret||[]).map(k=>String(k).slice(0,TRIM)));}}catch(e){}}
+async function loadRegistry(){
+  REG_LOADED=false;                                          // до подтверждения — реестр НЕ считается загруженным
+  const r=await srv('?data=registry');
+  if(!r.ok) throw new Error('реестр HTTP '+r.status);
+  const j=await r.json();
+  if(j&&j.error) throw new Error('реестр: '+j.error);
+  REG_OUT=new Set((j.out||[]).map(k=>String(k).slice(0,TRIM)));
+  REG_RET=new Set((j.ret||[]).map(k=>String(k).slice(0,TRIM)));
+  REG_LOADED=true;                                           // только теперь дедупу можно доверять
+}
 function ingestServer(data){
   COMPANIES=data.companies||[];
   ROWS=(data.rows||[]).map(mapRow);PENDING={};
@@ -404,8 +413,13 @@ function renderReg(){
 
 /* ═══════════ EXPORT ═══════════ */
 function download(name,text){const b=new Blob(['\uFEFF'+text],{type:'text/csv;charset=utf-8'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
-function exportChZ(statusesStr,tid){
-  const reg=tid==='out'?REG_OUT:REG_RET;
+async function exportChZ(statusesStr,tid){
+  if(SERVER_ACTIVE){                                          // перечитываем реестр прямо перед выгрузкой
+    try{ await loadRegistry(); }
+    catch(e){ toast('Реестр не загрузился ('+e.message+') — выгрузка отменена, чтобы не отправить дубли в ЧЗ. Нажми «Обновить» и повтори.'); render(); return; }
+  }
+  if(SERVER_ACTIVE&&!REG_LOADED){ toast('Реестр не подтверждён — выгрузка заблокирована во избежание дублей.'); return; }
+  const reg=tid==='out'?REG_OUT:REG_RET;                      // берём уже свежий реестр
   const statuses=statusesStr.split(',');const exp=exportable(filtered(statuses),reg);
   if(!exp.length){toast('Нет новых КИЗ к выгрузке');return;}
   const kind=statuses.includes('canceled_by_client')?'возврат':'вывод';
@@ -473,6 +487,7 @@ function renderDiag(){let d=document.getElementById('diagPanel');
     ${line(noKiz?'warn':'ok','Без КИЗ (в действиях)',noKiz,noKiz?'не попадут в выгрузку':'')}
     ${line(zero?'warn':'ok','Цена 0 (в действиях)',zero,zero?'исключены':'')}
     ${line(dup?'warn':'ok','Дубли КИЗ',dup,dup?'берётся один раз':'')}
+    ${line(REG_LOADED?'ok':'warn','Статус реестра',REG_LOADED?'загружен':'НЕ ЗАГРУЖЕН',REG_LOADED?(SERVER_ACTIVE?'дедуп активен':'локальный'):'выгрузка заблокирована — обнови страницу')}
     ${line('ok','Реестр «Выведено»',REG_OUT.size,SERVER_ACTIVE?'общий':'локальный')}
     ${line('ok','Реестр «Возвращено»',REG_RET.size,SERVER_ACTIVE?'общий':'локальный')}
     ${srvLines}</table>`;
