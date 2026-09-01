@@ -159,7 +159,7 @@ td span.v{position:relative;z-index:1}
 <script>
 /* ═══════════ КОНФИГ ═══════════ */
 const WORKER = 'https://kiz.ooo6311ooo.workers.dev';   /* твой адрес воркера; пусто = офлайн-режим */
-const VERSION='2026-08-26a · возврат: 1 столбец без шапки + защита реестра от дублей';  /* метка сборки — видна в диагностике */
+const VERSION='2026-08-31a · возврат: .xls (BIFF8) для ЧЗ, 1 столбец без шапки';  /* метка сборки — видна в диагностике */
 
 /* ═══════════ STATE ═══════════ */
 const LS_OUT='kiz_reg_out_v1', LS_RET='kiz_reg_ret_v1', TRIM=31;
@@ -428,8 +428,9 @@ async function exportChZ(statusesStr,tid){
   toast(`Скачано ${exp.length} КИЗ. Файл НЕ помечен — подтверди после загрузки в ЧЗ.`);
   render();
 }
-// КИЗ содержит спецсимволы (; , и др.) -> отдаём xlsx, где КИЗ = текст в одной ячейке
-// kizOnly=true (возврат в оборот): один столбец КИЗ, без заголовка и без цены — по шаблону ЧЗ
+// КИЗ содержит спецсимволы (; , " и др.) -> кладём КИЗ = текст в одной ячейке
+// kizOnly=true (возврат в оборот): один столбец, без заголовка и без цены, формат СТАРЫЙ .xls (BIFF8) —
+//   Честный знак принимает только его; .xlsx он «видит», но коды не распознаёт и не даёт нажать «Далее».
 function writeExport(fname,exp,kizOnly){
   if(typeof XLSX!=='undefined'){
     const aoa=kizOnly
@@ -439,8 +440,9 @@ function writeExport(fname,exp,kizOnly){
     ws['!cols']=kizOnly?[{wch:36}]:[{wch:36},{wch:12}];
     const from=kizOnly?1:2;                                                  // строка, с которой начинается КИЗ
     for(let i=from;i<=aoa.length;i++){const c=ws['A'+i];if(c){c.t='s';c.z='@';}}   // КИЗ строго текст
-    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'КИЗ');
-    XLSX.writeFile(wb,fname+'.xlsx');
+    const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Шаблон');
+    if(kizOnly) XLSX.writeFile(wb,fname+'.xls',{bookType:'xls'});            // возврат -> BIFF8 .xls
+    else        XLSX.writeFile(wb,fname+'.xlsx');                            // вывод -> как было
   }else{  // запасной CSV с кавычками, чтобы ; внутри КИЗ не рвал столбцы
     const csv=kizOnly
       ? exp.map(r=>`"${String(r.kiz).replace(/"/g,'""')}"`).join('\n')
